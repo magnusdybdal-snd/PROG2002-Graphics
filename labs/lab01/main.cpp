@@ -121,42 +121,17 @@ int main(void) {
   
   // Setting background color
   glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
- 
-
-  // Compile the vertex shader
-  auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  const GLchar* vss = vertexShaderSrc.c_str();
-  glShaderSource(vertexShader, 1, &vss, nullptr);
-  glCompileShader(vertexShader);
-
-  // Compile the fragment shader
-  auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  const GLchar* fss = fragmentShaderSrc.c_str();
-  glShaderSource(fragmentShader, 1, &fss, nullptr);
-  glCompileShader(fragmentShader);
-
-  // Create a shader program
-  auto shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-
-  // Shader objects can be deleted once they have been linked to a shader program
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
-  // Activate the program
-  glUseProgram(shaderProgram);
 
   // MAIN RENDER LOOP
   while (!glfwWindowShouldClose(window)) {
     // Process the event queue
     glfwPollEvents();
-    // Clear the window
-    glClear(GL_COLOR_BUFFER_BIT);
-    // Draw the triangle
+    //glUseProgram(squareShaderProgram);
+    //glBindVertexArray(squareVAO);
+    //glDrawArrays(GL_TRIANGLES, 0, 6);
+    glUseProgram(triangleShaderProgram);
+    glBindVertexArray(triangleVAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    // Display the scene
     glfwSwapBuffers(window);
     // Listen for escape press to exit
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) break;
@@ -200,12 +175,12 @@ GLuint CompileShader(const std::string& vertexShaderSrc,
 
 GLuint CreateSquare() {
   GLfloat square[6*2] = {
-    -0.5f, -0.5f,
-    -0.5f, 0.5f,
-    0.5f, 0.5f,
-    0.5f, 0.5f,
-    -0.5f, -0.5f,
-    -0.5f, 0.5f
+    -0.5f, -0.5f,   // Bottom left
+     0.5f, -0.5f,   // Bottom right
+     0.5f,  0.5f,   // Top right
+    -0.5f, -0.5f,   // Bottom left
+     0.5f,  0.5f,   // Top right
+    -0.5f,  0.5f    // Top left
   };
 
     // Create a Vertex Array Object (VAO)
@@ -225,11 +200,6 @@ GLuint CreateSquare() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, nullptr);
   // Enables the attributes
   glEnableVertexAttribArray(0);
-
-    // Cleanup
-  glDisableVertexAttribArray(0);
-  glDeleteBuffers(1, &vertexBufferId);
-  glDeleteVertexArrays(1, &vertexArrayId);
 
   return vertexArrayId;
 }
@@ -259,11 +229,6 @@ GLuint CreateTriangle() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, nullptr);
   // Enables the attributes
   glEnableVertexAttribArray(0);
-
-    // Cleanup
-  glDisableVertexAttribArray(0);
-  glDeleteBuffers(1, &vertexBufferId);
-  glDeleteVertexArrays(1, &vertexArrayId);
 
   return vertexArrayId;
 }
