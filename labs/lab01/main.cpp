@@ -1,7 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "shaders/triangleshader.h"
+#include "shaders/squareshader.h"
 
 #include <iostream>
+#include <set>
+#include <cmath>
 
 /**
  * FUNCTION PROTOTYPES
@@ -13,6 +17,7 @@ GLuint CreateTriangle();
 GLuint CreateSquare();
 
 void CleanVAO(GLuint &vao);
+float easeInOutQuad(float t);
 
 void GLFWErrorCallBack(int code, const char* description);
 void GLAPIENTRY MessageCallback(GLenum source,
@@ -27,43 +32,6 @@ void GLAPIENTRY MessageCallback(GLenum source,
  * ENTRY POINT
  */
 int main(void) {
-
-  // Shader setup
-
-  // Vertex shader that forwards the coordinates
-  const std::string vertexShaderSrc = R"(
-  #version 430 core
-  
-  layout(location = 0) in vec2 position;
-  
-  void main()
-  {
-    gl_Position = vec4(position, 0.0, 1.0); // Homogeneous coordinates 3D + 1
-  }
-  )";
-
-  // Fragment shader that fills the triangle with color
-  const std::string fragmentShaderSrc = R"(
-  #version 430 core
-  
-  out vec4 color;
-  void main()
-  {
-    color = vec4(1.0, 1.0, 1.0, 1.0);
-  }
-  )";
-
-  static const std::string squareVertexShaderSrc = R"(
-  #version 430 core
-
-  layout(location = 0) in vec3 a_Position;
-
-  void main()
-  {
-  gl_Position = vec4(a_Position, 1.0f);
-  }
-  )";
-
 
   // Setting an error callback for GLFW to capture issues
   // glfwSetErrorCallback(GLFWErrorCallBack);
@@ -114,24 +82,59 @@ int main(void) {
 
   // Creating the square and its associated shader program
   auto squareVAO = CreateSquare();
-  auto squareShaderProgram = CompileShader(squareVertexShaderSrc, fragmentShaderSrc);
+  auto squareShaderProgram = CompileShader(squareVertexShaderSrc, squareFragmentShaderSrc);
 
+  // Creating the triangle and its associated shader program
   auto triangleVAO = CreateTriangle();
-  auto triangleShaderProgram = CompileShader(vertexShaderSrc, fragmentShaderSrc);
+  auto triangleShaderProgram = CompileShader(triangleVertexShaderSrc, triangleFragmentShaderSrc);
   
-  // Setting background color
-  glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
+  double currentTime = 0.0;
+  double lastTime = 0.0;
+  glfwSetTime(0.0);
 
   // MAIN RENDER LOOP
   while (!glfwWindowShouldClose(window)) {
     // Process the event queue
     glfwPollEvents();
-    //glUseProgram(squareShaderProgram);
-    //glBindVertexArray(squareVAO);
-    //glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    
+    currentTime = glfwGetTime();
+    
+    // Uses easing function to adjust color value
+    auto redValue = easeInOutQuad(currentTime);
+    float bgR = (sin(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
+    float bgG = (cos(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
+    float bgB = 0.3f;  // constant blueish
+    
+    // Clears screen back to background color
+    glClearColor(bgR, bgG, bgB, 0.7f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // ----------DRAW THE SQUARE----------
+
+    // Gets the uniform (global) variable u_Color from the square shader program
+    auto vertexColorLocation = glGetUniformLocation(squareShaderProgram, "u_Color");
+
+    // Tells openGL to use the square shader program and VAO
+    glUseProgram(squareShaderProgram);
+    glBindVertexArray(squareVAO);
+
+    // Sets uniform color by passing the red value(changing) and G, B, Alpha
+    glUniform4f(vertexColorLocation, redValue, 0.0f, 0.0f, 1.0f);
+
+    // Draws the square using draw elements (indicies) (Shapes, number of indicies, type of indicies, start at)
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)0);
+
+    // ----------DRAW THE TRIANGLE----------
+
+    // Tells openGL to use the triangle shader program and VAO
     glUseProgram(triangleShaderProgram);
     glBindVertexArray(triangleVAO);
+
+    // Draws the triangle using drawArrays (no indicies)
     glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
     glfwSwapBuffers(window);
     // Listen for escape press to exit
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) break;
@@ -174,42 +177,49 @@ GLuint CompileShader(const std::string& vertexShaderSrc,
 }
 
 GLuint CreateSquare() {
-  GLfloat square[6*2] = {
-    -0.5f, -0.5f,   // Bottom left
-     0.5f, -0.5f,   // Bottom right
-     0.5f,  0.5f,   // Top right
-    -0.5f, -0.5f,   // Bottom left
-     0.5f,  0.5f,   // Top right
-    -0.5f,  0.5f    // Top left
+  GLfloat squareVerticies[4*3] = {
+    -0.5f, -0.5f, 0.0f,   // Bottom left
+     0.5f, -0.5f, 0.0f,   // Bottom right
+     0.5f,  0.5f, 0.0f,   // Top right
+    -0.5f,  0.5f, 0.0f    // Top left
   };
 
+  GLuint squareIndicies[2*3] = {
+    0, 1, 2,
+    2, 3, 0
+  };
+
+  GLuint squareVBO; // Vertex Buffer Object
+  GLuint squareEBO; // Element Buffer Object
+  GLuint squareVAO; // Vertex Array Object
+
     // Create a Vertex Array Object (VAO)
-  GLuint vertexArrayId;   // Buffer to hold state needed to supply vertex data
-  glGenVertexArrays(1, &vertexArrayId);
-  glBindVertexArray(vertexArrayId);   // Bind it for use
+  glGenVertexArrays(1, &squareVAO);
+  glBindVertexArray(squareVAO);                     // Bind for use
 
-  // Create a Vertext Buffer Object (VBO)
-  GLuint vertexBufferId;
-  glGenBuffers(1, &vertexBufferId);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);     // Bind it for use
+  // Create a Vertex Buffer Object (VBO)
+  glGenBuffers(1, &squareVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, squareVBO);         // Bind for use
+  glBufferData(GL_ARRAY_BUFFER, sizeof(squareVerticies), squareVerticies, GL_STATIC_DRAW); // Populate
 
-  // Populate the vertex buffer
-  glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
+  // Create a Element Buffer Object (EBO)
+  glGenBuffers(1, &squareEBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, squareEBO); // Bind for use
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(squareIndicies), squareIndicies, GL_STATIC_DRAW);// Populate
 
-  // Set the layout of the bound buffer
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, nullptr);
-  // Enables the attributes
+  // Vertex positions
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
-  return vertexArrayId;
+  return squareVAO;
 }
 
 GLuint CreateTriangle() {
 
-    GLfloat  triangle[3*2] = { // GLfloat has a set size that does not change per system compared to float
-    -0.5f, -0.5f,
-    0.5f, -0.5f,
-    0.0f,  0.5f
+    GLfloat  triangle[3*3] = { // GLfloat has a set size that does not change per system compared to float
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    0.0f,  0.5f, 0.0f,
   };
 
   // Create a Vertex Array Object (VAO)
@@ -226,9 +236,28 @@ GLuint CreateTriangle() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
   // Set the layout of the bound buffer
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, nullptr);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, nullptr);
   // Enables the attributes
   glEnableVertexAttribArray(0);
 
   return vertexArrayId;
+}
+
+/**
+ * Easing function for changing color in square
+ */
+float easeInOutQuad(float t) {
+    // Normalize to [0,1] over a 2-second cycle
+    float x = fmod(t, 4.0f) / 4.0f;
+
+    // Ping-pong: reflect second half
+    if (x > 0.5f) {
+        x = 1.0f - x;
+    }
+    x *= 2.0f; // rescale back to [0,1]
+
+    // Ease InOutQuad
+    return x < 0.5f
+        ? 2.0f * x * x
+        : 1.0f - pow(-2.0f * x + 2.0f, 2) / 2.0f;
 }
