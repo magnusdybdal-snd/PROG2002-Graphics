@@ -72,7 +72,6 @@ int main(void) {
   // Enable capture of debug output to get messages about potential issues
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  
   glDebugMessageCallback(MessageCallback, 0);
   glDebugMessageControl(GLFW_DONT_CARE, GLFW_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
