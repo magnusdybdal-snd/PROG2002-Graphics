@@ -17,9 +17,9 @@ GLuint CreateTriangle();
 GLuint CreateSquare();
 
 void CleanVAO(GLuint &vao);
-float easeInOutQuad(float t);
+float EaseInOutQuad(float t);
 
-void GLFWErrorCallBack(int code, const char* description);
+void GLFWErrorCallback(int code, const char* description);
 void GLAPIENTRY MessageCallback(GLenum source,
                                 GLenum type,
                                 GLuint id,
@@ -34,7 +34,7 @@ void GLAPIENTRY MessageCallback(GLenum source,
 int main(void) {
 
   // Setting an error callback for GLFW to capture issues
-  // glfwSetErrorCallback(GLFWErrorCallBack);
+  glfwSetErrorCallback(GLFWErrorCallback);
   // Stops the program if GLFW fails
   if(!glfwInit()) {
     std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -72,7 +72,8 @@ int main(void) {
   // Enable capture of debug output to get messages about potential issues
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  //glDebugMessageCallback(MessageCallback, 0);
+  
+  glDebugMessageCallback(MessageCallback, 0);
   glDebugMessageControl(GLFW_DONT_CARE, GLFW_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
   // Printing OpenGL information
@@ -98,26 +99,25 @@ int main(void) {
     // Process the event queue
     glfwPollEvents();
 
-    
+    // Handles (swaps) the alternate flag every 1 second
     currentTime = glfwGetTime();
     if (currentTime - lastTime > 1.0) {
       alternate = !alternate;
       lastTime = currentTime;
     }
     
-    // Uses easing function to adjust color value
-    // redvalue for square
-    auto redValue = easeInOutQuad(currentTime);
-    // Background values
+    // Background color values
     float bgR = (sin(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
     float bgG = (cos(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
-    float bgB = 0.3f;  // constant blueish
+    float bgB = (sin(currentTime * 1.0f) + 2.0f) * 1.5f;  // oscillates 0 → 1
     
     // Clears screen back to background color
     glClearColor(bgR, bgG, bgB, 0.7f);
     glClear(GL_COLOR_BUFFER_BIT);
-
+    
     // ----------DRAW THE SQUARE----------
+    // redvalue for square
+    auto redValue = EaseInOutQuad(currentTime);
 
     // Gets the uniform (global) variable u_Color from the square shader program
     auto vertexColorLocation = glGetUniformLocation(squareShaderProgram, "u_Color");
@@ -134,6 +134,7 @@ int main(void) {
 
     // ----------DRAW THE TRIANGLE----------
 
+    // Gets the uniform (global) variable u_AlternateFlag from the triangle shader program
     auto alternateFlagLocation = glGetUniformLocation(triangleShaderProgram, "u_AlternateFlag");
 
     // Tells openGL to use the triangle shader program and VAO
@@ -151,6 +152,14 @@ int main(void) {
     // Listen for escape press to exit
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) break;
   }
+
+  // Cleanup
+  glUseProgram(0);
+  glDeleteProgram(triangleShaderProgram);
+  glDeleteProgram(squareShaderProgram);
+
+  CleanVAO(triangleVAO);
+  CleanVAO(squareVAO);
 
   glfwTerminate();
 
@@ -234,15 +243,16 @@ GLuint CreateTriangle() {
      0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f
   };
 
+  GLuint triangleVAO;
+  GLuint triangleVBO;
+
   // Create a Vertex Array Object (VAO)
-  GLuint vertexArrayId;   // Buffer to hold state needed to supply vertex data
-  glGenVertexArrays(1, &vertexArrayId);
-  glBindVertexArray(vertexArrayId);   // Bind it for use
+  glGenVertexArrays(1, &triangleVAO);
+  glBindVertexArray(triangleVAO);   // Bind it for use
 
   // Create a Vertext Buffer Object (VBO)
-  GLuint vertexBufferId;
-  glGenBuffers(1, &vertexBufferId);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);     // Bind it for use
+  glGenBuffers(1, &triangleVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);     // Bind it for use
 
   // Populate the vertex buffer
   glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
@@ -251,19 +261,21 @@ GLuint CreateTriangle() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)0);
   glEnableVertexAttribArray(0);
 
+  // Set the layout for color1 positions 
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
+  // Set the layout for color2 positions
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
 
-  return vertexArrayId;
+  return triangleVAO;
 }
 
 /**
  * Easing function for changing color in square
  */
-float easeInOutQuad(float t) {
+float EaseInOutQuad(float t) {
     // Normalize to [0,1] over a 2-second cycle
     float x = fmod(t, 4.0f) / 4.0f;
 
@@ -277,4 +289,43 @@ float easeInOutQuad(float t) {
     return x < 0.5f
         ? 2.0f * x * x
         : 1.0f - pow(-2.0f * x + 2.0f, 2) / 2.0f;
+}
+
+void CleanVAO(GLuint &vao) {
+  glBindVertexArray(vao);
+  GLint maxVertexAttribs;
+  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs);
+  for (GLint i = 0; i < maxVertexAttribs; i++) {
+    glDisableVertexAttribArray(i);
+  }
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &vao);
+  vao = 0;
+}
+
+// -----------------------------------------------------------------------------
+//  GLFW ERROR CALLBACK
+// -----------------------------------------------------------------------------
+void GLFWErrorCallback(int code, const char* description)
+{
+  std::cerr << "GLFW Error " << code << ": " << description << "\n";
+}
+
+// -----------------------------------------------------------------------------
+//  MESSAGE CALLBACK
+// -----------------------------------------------------------------------------
+void GLAPIENTRY MessageCallback(GLenum source,
+                                GLenum type,
+                                GLuint id,
+                                GLenum severity,
+                                GLsizei length,
+                                const GLchar* message,
+                                const void* userParam)
+{
+  // Outputs debugging messages from OpenGL
+  std::cerr << "GL CALLBACK: "
+    << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "")
+    << " type = 0x" << type
+    << ", severity = 0x" << severity
+    << ", message = " << message << "\n";
 }
