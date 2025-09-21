@@ -90,6 +90,7 @@ int main(void) {
   
   double currentTime = 0.0;
   double lastTime = 0.0;
+  bool alternate = false;
   glfwSetTime(0.0);
 
   // MAIN RENDER LOOP
@@ -99,9 +100,15 @@ int main(void) {
 
     
     currentTime = glfwGetTime();
+    if (currentTime - lastTime > 1.0) {
+      alternate = !alternate;
+      lastTime = currentTime;
+    }
     
     // Uses easing function to adjust color value
+    // redvalue for square
     auto redValue = easeInOutQuad(currentTime);
+    // Background values
     float bgR = (sin(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
     float bgG = (cos(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
     float bgB = 0.3f;  // constant blueish
@@ -127,9 +134,14 @@ int main(void) {
 
     // ----------DRAW THE TRIANGLE----------
 
+    auto alternateFlagLocation = glGetUniformLocation(triangleShaderProgram, "u_AlternateFlag");
+
     // Tells openGL to use the triangle shader program and VAO
     glUseProgram(triangleShaderProgram);
     glBindVertexArray(triangleVAO);
+
+    // Updates the uniform (global) variable within the shader program (1 or 0 cast from true/false)
+    glUniform1ui(alternateFlagLocation, static_cast<unsigned int>(alternate));
 
     // Draws the triangle using drawArrays (no indicies)
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -216,10 +228,10 @@ GLuint CreateSquare() {
 
 GLuint CreateTriangle() {
 
-    GLfloat  triangle[3*3] = { // GLfloat has a set size that does not change per system compared to float
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f,  0.5f, 0.0f,
+    GLfloat  triangle[3*9] = { // GLfloat has a set size that does not change per system compared to float
+    -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, 1.0f,
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, 1.0f,
+     0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f
   };
 
   // Create a Vertex Array Object (VAO)
@@ -235,10 +247,15 @@ GLuint CreateTriangle() {
   // Populate the vertex buffer
   glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-  // Set the layout of the bound buffer
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, nullptr);
-  // Enables the attributes
+  // Set the layout for vertex positions and enable the attributes
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)0);
   glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
 
   return vertexArrayId;
 }
