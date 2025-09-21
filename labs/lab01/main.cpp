@@ -153,8 +153,8 @@ int main(void) {
   }
 
   // Cleanup
-  glUseProgram(0);
-  glDeleteProgram(triangleShaderProgram);
+  glUseProgram(0);    // "use no program" deselects the current shader
+  glDeleteProgram(triangleShaderProgram); // Frees the GPU memory from the shader programs
   glDeleteProgram(squareShaderProgram);
 
   CleanVAO(triangleVAO);
