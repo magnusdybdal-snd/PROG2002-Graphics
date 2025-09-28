@@ -1,6 +1,6 @@
-#pragma once
-
-#include "GLFWApplication/GLFWApplication.h"
+#ifndef GLFWAPPLICATION_H_
+#include "GLFWApplication.h"
+#endif
 
 class Lab2Application : public GLFWApplication
 {

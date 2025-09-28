@@ -1,8 +1,8 @@
 #include "GLFWApplication.h"
 #include <iostream>
 
-GLFWApplication::GLFWApplication(const std::string &name, const std::string &version)
-    :m_name(name), m_version(version)
+GLFWApplication::GLFWApplication(const std::string &name, const std::string &version, int windowWidth, int windowHeight)
+    :m_name(name), m_version(version), m_windowName(name + " v: " + version), m_windowWidth(windowWidth), m_windowHeight(windowHeight)
 {
 }
 
@@ -35,7 +35,7 @@ unsigned GLFWApplication::Init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
 
     // Create the window
-    auto window = glfwCreateWindow(1200, 1200, "Issue 3 - Triangle/Square", nullptr, nullptr);
+    auto window = glfwCreateWindow(m_windowWidth, m_windowHeight, m_windowName.c_str(), nullptr, nullptr);
     // Handles if window is not created properly
     if (window == nullptr) {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -104,7 +104,7 @@ void GLFWApplication::GLFWErrorCallback(int code, const char* description)
     std::cerr << "GLFW Error " << code << ": " << description << "\n";
 }
 
-void GLAPIENTRY MessageCallback(GLenum source,
+void GLAPIENTRY GLFWApplication::MessageCallback(GLenum source,
                                 GLenum type,
                                 GLuint id,
                                 GLenum severity,

@@ -7,7 +7,12 @@
 class GLFWApplication
 {
     public:
-    GLFWApplication(const std::string &name, const std::string &version);
+    GLFWApplication(
+        const std::string &name, 
+        const std::string &version,
+        int windowWidth = 1280,
+        int windowHeight = 720
+    );
     ~GLFWApplication();
 
     // Initialize GLFW, create window, initialize GLAD
@@ -26,6 +31,9 @@ class GLFWApplication
     private:
     std::string m_name;
     std::string m_version;
+    int m_windowWidth = 1280;
+    int m_windowHeight = 720;
+    std::string m_windowName;
     GLFWwindow* m_window = nullptr;
 
     // Error callbacks

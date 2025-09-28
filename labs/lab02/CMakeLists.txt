@@ -6,5 +6,5 @@ add_executable(lab02 main.cpp Lab2Application.cpp)
 
 target_link_libraries(lab02
     PRIVATE
-    framework::GLFWApplication
+    Framework::GLFWApplication
 )

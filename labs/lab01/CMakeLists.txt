@@ -4,6 +4,6 @@ project(lab01)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(HelloWorld main.cpp)   # Generate an executable named HelloWorld from main.cpp [7]
+add_executable(lab01 main.cpp)   # Generate an executable named lab01 from main.cpp [7]
 
-target_link_libraries(HelloWorld glfw glad OpenGL::GL)
+target_link_libraries(lab01 glfw glad OpenGL::GL)
