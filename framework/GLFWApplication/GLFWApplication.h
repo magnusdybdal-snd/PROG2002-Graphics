@@ -10,21 +10,31 @@ class GLFWApplication
     GLFWApplication(const std::string &name, const std::string &version);
     ~GLFWApplication();
 
-    // Initialisation
+    // Initialize GLFW, create window, initialize GLAD
     virtual unsigned Init();
 
-    // Run function
-    virtual unsigned Run() const = 0;
+    // Pure virtual function - must be implemented in subclass
+    virtual unsigned Run() = 0;
     
     protected:
+
     GLFWwindow* GetWindow() const { return m_window; }
 
+    // Basic shader compiler helper
     GLuint CompileShader(const std::string& vertexShader, const std::string& fragmentShader);
 
     private:
     std::string m_name;
     std::string m_version;
-    GLFWwindow* m_window = nullptr
+    GLFWwindow* m_window = nullptr;
 
-    static 
+    // Error callbacks
+    static void GLFWErrorCallback(int code, const char* description);
+    static void GLAPIENTRY MessageCallback(GLenum source,
+                                GLenum type,
+                                GLuint id,
+                                GLenum severity,
+                                GLsizei length,
+                                const GLchar* message,
+                                const void* userParam);
 };
