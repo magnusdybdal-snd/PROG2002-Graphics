@@ -13,7 +13,7 @@ class GLFWApplication
         int windowWidth = 1280,
         int windowHeight = 720
     );
-    ~GLFWApplication();
+    virtual ~GLFWApplication();
 
     // Initialize GLFW, create window, initialize GLAD
     virtual unsigned Init();
