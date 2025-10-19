@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../../lib/libGLFWApplication.a CMakeFiles/GLFWApplication.dir/GLFWApplication.cpp.o
-/usr/bin/ranlib ../../lib/libGLFWApplication.a
