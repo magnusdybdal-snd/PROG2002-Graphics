@@ -74,7 +74,7 @@ int main(void) {
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageCallback(MessageCallback, 0);
-  glDebugMessageControl(GLFW_DONT_CARE, GLFW_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+  glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
   // Printing OpenGL information
   std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
@@ -199,11 +199,14 @@ GLuint CompileShader(const std::string& vertexShaderSrc,
 }
 
 GLuint CreateSquare() {
+
+  auto positions = GeometricTools::UnitSquare2D;
+
   GLfloat squareVerticies[4*3] = {
-    -0.5f, -0.5f, 0.0f,   // Bottom left
-     0.5f, -0.5f, 0.0f,   // Bottom right
-     0.5f,  0.5f, 0.0f,   // Top right
-    -0.5f,  0.5f, 0.0f    // Top left
+    positions[0], positions[1], 0.0f,   // Bottom left
+    positions[2], positions[3], 0.0f,   // Bottom right
+    positions[4], positions[5], 0.0f,   // Top right
+    positions[6], positions[7], 0.0f    // Top left
   };
 
   GLuint squareIndicies[2*3] = {
