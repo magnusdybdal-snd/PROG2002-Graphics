@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "shaders/triangleshader.h"
 #include "shaders/squareshader.h"
+#include "GeometricTools.h"
 
 #include <iostream>
 #include <set>
@@ -237,10 +238,12 @@ GLuint CreateSquare() {
 
 GLuint CreateTriangle() {
 
+  auto positions = GeometricTools::UnitTriangle2D;
+
     GLfloat  triangle[3*9] = { // GLfloat has a set size that does not change per system compared to float
-    -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, 1.0f,
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, 1.0f,
-     0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f
+    positions[0], positions[1], 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, 1.0f,
+    positions[2], positions[3], 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, 1.0f,
+    positions[4], positions[5], 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f
   };
 
   GLuint triangleVAO;

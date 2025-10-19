@@ -6,4 +6,4 @@ find_package(OpenGL REQUIRED)
 
 add_executable(lab01 main.cpp)   # Generate an executable named lab01 from main.cpp [7]
 
-target_link_libraries(lab01 glfw glad OpenGL::GL)
+target_link_libraries(lab01 glfw glad OpenGL::GL Framework::GeometricTools)
