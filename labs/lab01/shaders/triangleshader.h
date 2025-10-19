@@ -34,8 +34,6 @@ const std::string triangleFragmentShaderSrc = R"(
 in vec4 v_Color;
 out vec4 color;
 
-uniform vec4 u_Color;
-
 void main()
 {
     color = v_Color;

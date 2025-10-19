@@ -108,7 +108,7 @@ int main(void) {
     // Background color values
     float bgR = (sin(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
     float bgG = (cos(currentTime * 0.5f) + 1.0f) * 0.5f;  // oscillates 0 → 1
-    float bgB = (sin(currentTime * 1.0f) + 2.0f) * 1.5f;  // oscillates 0 → 1
+    float bgB = (sin(currentTime * 1.0f) + 2.0f) * 0.5f;  // oscillates 0 → 1
     
     // Clears screen back to background color
     glClearColor(bgR, bgG, bgB, 0.7f);
@@ -129,7 +129,8 @@ int main(void) {
     glUniform4f(vertexColorLocation, redValue, 0.0f, 0.0f, 1.0f);
 
     // Draws the square using draw elements (indicies) (Shapes, number of indicies, type of indicies, start at)
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)0);
+    const GLsizei SQUARE_INDEX_COUNT = 6;
+    glDrawElements(GL_TRIANGLES, SQUARE_INDEX_COUNT, GL_UNSIGNED_INT, (const void*)0);
 
     // ----------DRAW THE TRIANGLE----------
 
