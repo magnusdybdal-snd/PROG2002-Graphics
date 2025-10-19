@@ -113,10 +113,10 @@ GLuint GLFWApplication::CompileShader(const std::string& vertexShaderSrc,
     glLinkProgram(shaderProgram);
 
     // Check linking
-    glGetShaderiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         char infoLog[512];
-        glGetShaderInfoLog(shaderProgram, 512, nullptr, infoLog);
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "Shader program linking failed:\n" << infoLog << std::endl;
     }
 
