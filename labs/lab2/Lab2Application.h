@@ -19,7 +19,7 @@ private:
     GLuint m_chessboardVAO = 0;
     GLuint m_chessboardVBO = 0;
     GLuint m_chessboardEBO = 0;
-    GLuint m_chessboardProgram = 0;
+    GLuint m_shaderProgram = 0;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;
