@@ -107,3 +107,68 @@ unsigned Lab2Application::Run()
     std::cout << "Exiting..." << std::endl;
     return EXIT_SUCCESS;
 }
+
+void Lab2Application::HandleInput()
+{
+    GLFWwindow* window = GetWindow();
+
+    // Simple debouncing; track if key was pressed last frame
+    static bool keyWasPressed = false;
+    bool keyIsPressed = false;
+
+    // Check arrow keys
+    // RIGHT
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedX < 7) {
+            m_selectedX++;
+            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+        }
+        keyIsPressed = true;
+    }
+    // LEFT
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedX > 0) {
+            m_selectedX--;
+            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+        }
+        keyIsPressed = true;
+    }
+    // UP
+    else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedY < 7) {
+            m_selectedY++;
+            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+        }
+        keyWasPressed = true;
+    }
+    // DOWN
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedY > 0) {
+            m_selectedY--;
+            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+        }
+        keyWasPressed = true;
+    }
+
+    // Update key state for next frame
+    keyWasPressed = keyIsPressed;
+
+    // ESC to exit program
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+}
+
+// Render the chessboard
+void Lab2Application::RenderChessboard()
+{
+    glUseProgram(m_shaderProgram);
+    glBindVertexArray(m_chessboardVAO);
+
+    // Pass the selected tile to the shader
+    GLint selectedTileLoc = glGetUniformLocation(m_shaderProgram, "u_selectedTile");
+    glUniform2i(selectedTileLoc, m_selectedX, m_selectedY);
+
+    // Draw the chessboard
+    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, (void*)0);
+}
