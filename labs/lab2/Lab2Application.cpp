@@ -34,7 +34,7 @@ Lab2Application::~Lab2Application()
 unsigned Lab2Application::Init()
 {
     // Call parent Init first to setup GLFW, window, OpenGL context)
-    if (GLFWApplication::Init() != EXIT_FAILURE) {
+    if (GLFWApplication::Init() != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
 
@@ -72,8 +72,9 @@ unsigned Lab2Application::Init()
     glEnableVertexAttribArray(0);
 
     // Compile shaders
-    m_shaderProgram = CompileShader(chessboardVertecShaderSrc, chessboardFragmentShaderSrc);
+    m_shaderProgram = CompileShader(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
 
+    // Debugging
     std::cout << "Chessboard setup complete!" << std::endl;
     std::cout << "Vertices: " << vertices.size() / 2 << std::endl;
     std::cout << "indices: " << indices.size() << std::endl;
@@ -85,7 +86,6 @@ unsigned Lab2Application::Run()
 {
     GLFWwindow* window = GetWindow();
 
-    std::cout << "Starting render loop..." << std::endl;
     std::cout << "Use arrow keys to move selector, ESC to exit" << std::endl;
 
     // Main rendering loop
@@ -124,7 +124,6 @@ void Lab2Application::HandleInput()
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedX < 7) {
             m_selectedX++;
-            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
         keyIsPressed = true;
     }
@@ -132,7 +131,6 @@ void Lab2Application::HandleInput()
     else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedX > 0) {
             m_selectedX--;
-            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
         keyIsPressed = true;
     }
@@ -140,17 +138,15 @@ void Lab2Application::HandleInput()
     else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedY < 7) {
             m_selectedY++;
-            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
-        keyWasPressed = true;
+        keyIsPressed = true;
     }
     // DOWN
     else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedY > 0) {
             m_selectedY--;
-            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
-        keyWasPressed = true;
+        keyIsPressed = true;
     }
 
     // Update key state for next frame
@@ -169,7 +165,7 @@ void Lab2Application::RenderChessboard()
     glBindVertexArray(m_chessboardVAO);
 
     // Pass the selected tile to the shader
-    GLint selectedTileLoc = glGetUniformLocation(m_shaderProgram, "u_selectedTile");
+    GLint selectedTileLoc = glGetUniformLocation(m_shaderProgram, "u_SelectedTile");
     glUniform2i(selectedTileLoc, m_selectedX, m_selectedY);
 
     // Draw the chessboard

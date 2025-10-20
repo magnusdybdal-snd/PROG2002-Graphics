@@ -33,18 +33,15 @@ void main()
         // Selected tile: Green
         fragColor = vec4(0.0, 0.9, 0.0, 1.0);
     }
-    elseif (isWhite) {
+    else if (isWhite) {
         // White tile
-        fragColor = vec4(0.9, 0.9, 0.9, 1.0)
+        fragColor = vec4(0.9, 0.9, 0.9, 1.0);
     }
-    elseif (!isWhite) {
+    else if (!isWhite) {
         // Black color
-        fragColor = vec4(0.1, 0.1, 0.1, 1.0)
+        fragColor = vec4(0.1, 0.1, 0.1, 1.0);
     }
 }
-
-
-
 )";
 
 #endif

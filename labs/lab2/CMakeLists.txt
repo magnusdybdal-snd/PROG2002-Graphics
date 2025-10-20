@@ -10,7 +10,7 @@ Lab2Application.cpp
 )  
 
 # glfw, glad and OpenGL::GL are linked trough GLFWApplication
-target_link_libraries(lab02 
+target_link_libraries(lab2 
 PRIVATE
 Framework::GeometricTools
 Framework::GLFWApplication
