@@ -68,5 +68,42 @@ unsigned Lab2Application::Init()
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // TODO: setup shaders
+    // m_shaderProgram = CompileShader(vxsrc, fgsrc)
 
+    std::cout << "Chessboard setup complete!" << std::endl;
+    std::cout << "Vertices: " << vertices.size() / 2 << std::endl;
+    std::cout << "indices: " << indices.size() << std::endl;
+
+    return EXIT_SUCCESS;
+}
+
+unsigned Lab2Application::Run()
+{
+    GLFWwindow* window = GetWindow();
+
+    std::cout << "Starting render loop..." << std::endl;
+    std::cout << "Use arrow keys to move selector, ESC to exit" << std::endl;
+
+    // Main rendering loop
+    while (!glfwWindowShouldClose(window)) 
+    {
+        // Process events
+        glfwPollEvents();
+
+        // Handle user input
+        HandleInput();
+
+        // clear screen
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Render the chessboard
+        RenderChessboard();
+
+        glfwSwapBuffers(window);
+    }
+
+    std::cout << "Exiting..." << std::endl;
+    return EXIT_SUCCESS;
 }
