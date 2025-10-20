@@ -2,11 +2,11 @@
 #include <iostream>
 
 GLFWApplication::GLFWApplication(const std::string &name, const std::string &version, int windowWidth, int windowHeight)
-    :m_name(name), 
-    m_version(version), 
-    m_windowName(name + " v: " + version), 
-    m_windowWidth(windowWidth), 
-    m_windowHeight(windowHeight)
+    : m_name(name), 
+      m_version(version), 
+      m_windowName(name + " v: " + version), 
+      m_windowWidth(windowWidth), 
+      m_windowHeight(windowHeight)
 {
 }
 
