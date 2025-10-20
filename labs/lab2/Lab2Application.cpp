@@ -2,6 +2,9 @@
 #include "GeometricTools.h"
 #include <iostream>
 
+#include "shaders/chessboard_vertex.h"
+#include "shaders/chessboard_fragment.h"
+
 // Constructor: Call parent constructor with 800x800 square window
 Lab2Application::Lab2Application(const std::string& name, const std::string& version)
     : GLFWApplication(name, version, 800, 800),
@@ -68,8 +71,8 @@ unsigned Lab2Application::Init()
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // TODO: setup shaders
-    // m_shaderProgram = CompileShader(vxsrc, fgsrc)
+    // Compile shaders
+    m_shaderProgram = CompileShader(chessboardVertecShaderSrc, chessboardFragmentShaderSrc);
 
     std::cout << "Chessboard setup complete!" << std::endl;
     std::cout << "Vertices: " << vertices.size() / 2 << std::endl;
@@ -121,7 +124,7 @@ void Lab2Application::HandleInput()
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedX < 7) {
             m_selectedX++;
-            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
         keyIsPressed = true;
     }
@@ -129,7 +132,7 @@ void Lab2Application::HandleInput()
     else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedX > 0) {
             m_selectedX--;
-            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
         keyIsPressed = true;
     }
@@ -137,7 +140,7 @@ void Lab2Application::HandleInput()
     else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedY < 7) {
             m_selectedY++;
-            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
         keyWasPressed = true;
     }
@@ -145,7 +148,7 @@ void Lab2Application::HandleInput()
     else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedY > 0) {
             m_selectedY--;
-            std::cout << "Selevted tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
+            std::cout << "Selected tile: (" << m_selectedX << ", " << m_selectedY << ")" << std::endl;
         }
         keyWasPressed = true;
     }
