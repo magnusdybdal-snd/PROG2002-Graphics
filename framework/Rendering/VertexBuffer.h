@@ -29,7 +29,7 @@ public:
 
 private:
   GLuint VertexBufferID;
-  BufferLayout Layout;
+  BufferLayout Layout; // ???
 };
 
 #endif // VERTEXBUFFER_H_

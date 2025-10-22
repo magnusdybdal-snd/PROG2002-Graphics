@@ -15,13 +15,7 @@ Lab2_aApplication::Lab2_aApplication(const std::string& name, const std::string&
 // Destructor: Cleanup OpenGL resources
 Lab2_aApplication::~Lab2_aApplication()
 {
-    if (m_chessboardVAO != 0) {
-        glDeleteVertexArrays(1, &m_chessboardVAO);
-    }
-    // Destructor takes care of cleaning upp OpenGL resources
-    delete m_chessboardVBO;
-    delete m_chessboardEBO;
-
+    // Smart pointers and class destructors in VAO, VBO, EBO handles cleanup automatically
     if (m_shaderProgram != 0) {
         glDeleteProgram(m_shaderProgram);
     }
@@ -41,22 +35,20 @@ unsigned Lab2_aApplication::Init()
     auto vertices = GeometricTools::UnitGridGeometry2D<8, 8>();
     auto indices = GeometricTools::UnitGridTopologyTriangles<8, 8>();
 
-    // Store index count for rendering
-    m_indexCount = static_cast<GLsizei>(indices.size());
+    // Create buffers using smart pointers
+    auto gridVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
+    auto gridIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
 
-    // Create and bind VAO
-    glGenVertexArrays(1, &m_chessboardVAO);
-    glBindVertexArray(m_chessboardVAO);
+    // Define the buffer layout
+    auto gridBufferLayout = BufferLayout(
+        {{ ShaderDataType::Float2, "position" }}
+    );
+    gridVertexBuffer->SetLayout(gridBufferLayout);
 
-    // Create and fill VBO
-    m_chessboardVBO = new VertexBuffer(vertices.data(), vertices.size() * sizeof(float));
-
-    // Create and fill the EBO
-    m_chessboardEBO = new IndexBuffer(indices.data(), indices.size());
-
-    // Setup vertex attributes (2D positions)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    // Create and configure vertex array
+    m_chessboardVAO = std::make_unique<VertexArray>();
+    m_chessboardVAO->AddVertexBuffer(gridVertexBuffer);
+    m_chessboardVAO->SetIndexBuffer(gridIndexBuffer);
 
     // Compile shaders
     m_shaderProgram = CompileShader(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
@@ -149,12 +141,12 @@ void Lab2_aApplication::HandleInput()
 void Lab2_aApplication::RenderChessboard()
 {
     glUseProgram(m_shaderProgram);
-    glBindVertexArray(m_chessboardVAO);
+    m_chessboardVAO->Bind();
 
     // Pass the selected tile to the shader
     GLint selectedTileLoc = glGetUniformLocation(m_shaderProgram, "u_SelectedTile");
     glUniform2i(selectedTileLoc, m_selectedX, m_selectedY);
 
     // Draw the chessboard
-    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, m_chessboardVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, (void*)0);
 }

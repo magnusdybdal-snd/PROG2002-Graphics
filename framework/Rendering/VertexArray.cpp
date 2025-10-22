@@ -1,4 +1,5 @@
 #include "VertexArray.h"
+#include <iostream>
 
 VertexArray::VertexArray()
 {
@@ -22,6 +23,13 @@ void VertexArray::Unbind() const
 
 void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer)
 {
+    // Safeguard - unsure about this one
+    if (vertexBuffer->GetLayout().GetAttributes().size() == 0)
+    {
+        std::cerr << "Error: VertexBuffer has no layout defined!" << std::endl;
+        return;
+    }
+
     // Bind the VAO
     glBindVertexArray(m_vertexArrayID);
 
@@ -41,19 +49,23 @@ void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuf
             ShaderDataTypeToOpenGLBaseType(attribute.Type), // Type
             attribute.Normalized,                           // Normalized
             layout.GetStride(),                             // Stride
-            (const void*)attribute.Offset                   // Offset
+            (const void*)(intptr_t)attribute.Offset                   // Offset
         );
         index++;
     }
 
     // Store the vertex buffer
     VertexBuffers.push_back(vertexBuffer);
-
-
-
 }
 
 void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer)
 {
+    // Bind the VAO
+    glBindVertexArray(m_vertexArrayID);
 
+    // Bind the index buffer
+    indexBuffer->Bind();
+
+    // Store the index buffer
+    IdxBuffer = indexBuffer;
 }

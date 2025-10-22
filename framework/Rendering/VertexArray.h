@@ -8,6 +8,7 @@
 #include "IndexBuffer.h"
 
 class VertexArray {
+    
 public:
     // Constructor & Destructor
     VertexArray();
@@ -15,6 +16,7 @@ public:
 
     // Bind vertex array
     void Bind() const;
+
     // Unbind vertex array
     void Unbind() const;
 
@@ -22,6 +24,7 @@ public:
     // the vertex buffer to set up the vertex attributes. Notice that
     // this function opens for the definition of several vertex buffers.
     void AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer);
+
     // Set index buffer
     void SetIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer);
 

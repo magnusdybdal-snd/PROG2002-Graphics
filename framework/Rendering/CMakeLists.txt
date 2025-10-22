@@ -1,6 +1,7 @@
 add_library(Rendering 
     VertexBuffer.cpp
     IndexBuffer.cpp
+    VertexArray.cpp
 )
 
 add_library(Framework::Rendering ALIAS Rendering)
