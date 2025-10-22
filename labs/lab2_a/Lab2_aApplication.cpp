@@ -21,10 +21,8 @@ Lab2_aApplication::~Lab2_aApplication()
     }
     // Destructor takes care of cleaning upp OpenGL resources
     delete m_chessboardVBO;
-
-    if (m_chessboardEBO != 0) {
-        glDeleteBuffers(1, &m_chessboardEBO);
-    }
+    delete m_chessboardEBO;
+    
     if (m_shaderProgram != 0) {
         glDeleteProgram(m_shaderProgram);
     }
@@ -55,12 +53,7 @@ unsigned Lab2_aApplication::Init()
     m_chessboardVBO = new VertexBuffer(vertices.data(), vertices.size() * sizeof(float));
 
     // Create and fill the EBO
-    glGenBuffers(1, &m_chessboardEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chessboardEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 indices.size() * sizeof(unsigned int),
-                 indices.data(),
-                 GL_STATIC_DRAW);
+    m_chessboardEBO = new IndexBuffer(indices.data(), indices.size());
 
     // Setup vertex attributes (2D positions)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);

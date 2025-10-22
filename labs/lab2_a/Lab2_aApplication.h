@@ -3,6 +3,7 @@
 #include <GLFWApplication.h>
 #include <GeometricTools.h>
 #include <VertexBuffer.h>
+#include <IndexBuffer.h>
 
 class Lab2_aApplication : public GLFWApplication
 {
@@ -19,7 +20,7 @@ private:
 
     GLuint m_chessboardVAO = 0;
     VertexBuffer* m_chessboardVBO = nullptr;
-    GLuint m_chessboardEBO = 0;
+    IndexBuffer* m_chessboardEBO = nullptr;
     GLuint m_shaderProgram = 0;
 
     // Tile selector state (0-7)
