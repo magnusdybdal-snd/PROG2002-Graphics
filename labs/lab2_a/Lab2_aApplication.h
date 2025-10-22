@@ -4,6 +4,7 @@
 #include <GeometricTools.h>
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
+#include <BufferLayout.h>
 
 class Lab2_aApplication : public GLFWApplication
 {

@@ -1,5 +1,4 @@
 #include "Lab2_aApplication.h"
-#include "GeometricTools.h"
 #include <iostream>
 
 #include "shaders/chessboard_vertex.h"
@@ -22,7 +21,7 @@ Lab2_aApplication::~Lab2_aApplication()
     // Destructor takes care of cleaning upp OpenGL resources
     delete m_chessboardVBO;
     delete m_chessboardEBO;
-    
+
     if (m_shaderProgram != 0) {
         glDeleteProgram(m_shaderProgram);
     }

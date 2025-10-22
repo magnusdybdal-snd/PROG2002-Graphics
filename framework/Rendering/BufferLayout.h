@@ -1,8 +1,11 @@
-#pragma once
+#ifndef BUFFERLAYOUT_H_
+#define BUFFERLAYOUT_H_
 
-#include <ShaderDataTypes.h>
 #include <string>
 #include <vector>
+#include <initializer_list>
+
+#include "ShaderDataTypes.h"
 
 struct BufferAttribute {
     // Constructor
@@ -21,7 +24,8 @@ class BufferLayout {
 public:
     BufferLayout() {}
     BufferLayout(const std::initializer_list<BufferAttribute> &attributes)
-        : Attributes(attributes) {
+        : Attributes(attributes) 
+    {
         this->CalculateOffsetAndStride();
     }
 
@@ -34,10 +38,12 @@ public:
     std::vector<BufferAttribute>::const_iterator end() const { return this->Attributes.end(); }
 
 private:
-    void CalculateOffsetAndStride() {
+    void CalculateOffsetAndStride() 
+    {
         GLsizei offset = 0;
         this->Stride = 0;
-        for (auto &attribute : Attributes) {
+        for (auto &attribute : Attributes) 
+        {
             attribute.Offset = offset;
             offset += attribute.Size;
             this->Stride += attribute.Size;
@@ -46,5 +52,7 @@ private:
 
 private:
     std::vector<BufferAttribute> Attributes;
-    GLsizei Stride;
+    GLsizei Stride = 0;
 };
+
+#endif // BUFFERLAYOUT_H_
