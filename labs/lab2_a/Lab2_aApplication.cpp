@@ -37,12 +37,20 @@ unsigned Lab2_aApplication::Init()
 
     // Create buffers using smart pointers
     auto gridVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
+
+
+    std::cout << "Indices count: " << indices.size() << std::endl;
+    std::cout << "Expected triangles: " << indices.size() / 3 << std::endl;
+
+    // After creating the index buffer:
     auto gridIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
+    std::cout << "IndexBuffer count: " << gridIndexBuffer->GetCount() << std::endl;
 
     // Define the buffer layout
     auto gridBufferLayout = BufferLayout(
         {{ ShaderDataType::Float2, "position" }}
     );
+
     gridVertexBuffer->SetLayout(gridBufferLayout);
 
     // Create and configure vertex array

@@ -1,6 +1,7 @@
 #include "IndexBuffer.h"
 
 IndexBuffer::IndexBuffer(GLuint *indices, GLsizei count)
+    : Count(count)
 {
     glGenBuffers(1, &IndexBufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferID);
