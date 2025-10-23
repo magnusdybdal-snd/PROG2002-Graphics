@@ -31,6 +31,7 @@ private:
 
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;
+    glm::mat4 m_chessboardModelMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;
