@@ -144,10 +144,8 @@ void Lab2_aApplication::RenderChessboard()
     m_chessboardVAO->Bind();
 
     // Pass the selected tile to the shader
-    m_shaderProgram->UploadUniformInt2("u_SelectedTile", m_selectedX, m_selectedY);
-    GLint selectedTileLoc = glGetUniformLocation(m_shaderProgram, "u_SelectedTile");
-    glUniform2i(selectedTileLoc, m_selectedX, m_selectedY);
+    m_shaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
 
     // Draw the chessboard
-    glDrawElements(GL_TRIANGLES, m_chessboardVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, m_chessboardVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 }

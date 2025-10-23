@@ -83,8 +83,9 @@ void Shader::CompileShader(GLenum shaderType, const std::string &shaderSrc)
         std::cerr << shaderTypeName << " shader compilation failed:\n" << infoLog << std::endl;
     }
 
-    if (shaderType == GL_VERTEX_SHADER) 
+    if (shaderType == GL_VERTEX_SHADER) {
         VertexShader = shader;
-    else if (shaderType == GL_FRAGMENT_SHADER)
+    } else if (shaderType == GL_FRAGMENT_SHADER) {
         FragmentShader = shader;
+    }
 }

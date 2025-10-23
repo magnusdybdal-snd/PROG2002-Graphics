@@ -22,6 +22,7 @@ private:
   GLuint ShaderProgram;
 
   void CompileShader(GLenum shaderType, const std::string &shaderSrc);
+  GLint GetUniformLocation(const std::string& name);
 };
 
 #endif // SHADER_H_
