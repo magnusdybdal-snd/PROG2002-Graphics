@@ -53,12 +53,12 @@ unsigned Lab3Application::Init()
     // 1. Scale, upscale by 2
     m_chessboardModelMatrix = glm::scale(
         m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(2.0f, 2.0f, 1.0f));       // Scale factors (X, Y, Z)
+        glm::vec3(1.0f, 1.0f, 0.0f));       // Scale factors (X, Y, Z)
 
     // 2. Rotate, 60 degrees by x axis
     m_chessboardModelMatrix = glm::rotate(
         m_chessboardModelMatrix,            // Matrix to transform
-        glm::radians(-60.0f),               // Angle (converts degrees to radians)
+        glm::radians(-45.0f),               // Angle (converts degrees to radians)
         glm::vec3(1.0f, 0.0f, 0.0f));       // Which axis to rotate (X, Y, Z)
 
     // 3. Translate (move) - stays at origin
@@ -119,7 +119,7 @@ unsigned Lab3Application::Run()
         HandleInput();
 
         // clear screen
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.8f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Render the chessboard
@@ -185,7 +185,10 @@ void Lab3Application::RenderChessboard()
     m_shaderProgram->Bind();
     m_chessboardVAO->Bind();
 
-    // Pass the selected tile to the shader
+    // Pass uniforms to shader
+    m_shaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
+    m_shaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
+    m_shaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
     m_shaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
 
     // Draw the chessboard

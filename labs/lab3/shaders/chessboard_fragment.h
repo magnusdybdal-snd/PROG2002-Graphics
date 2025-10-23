@@ -24,20 +24,20 @@ void main()
     bool isSelected = (tileX == u_SelectedTile.x && tileY == u_SelectedTile.y);
 
     // Checkerboard pattern
-    bool isWhite = ((tileX + tileY) % 2) == 0;
+    bool isBlack = ((tileX + tileY) % 2) == 0;
 
     // Set color based on tile type
     if (isSelected) {
         // Selected tile: Green
         fragColor = vec4(0.0, 0.9, 0.0, 1.0);
     }
-    else if (isWhite) {
-        // White tile
-        fragColor = vec4(0.9, 0.9, 0.9, 1.0);
-    }
-    else if (!isWhite) {
-        // Black color
+    else if (isBlack) {
+        // Black tile
         fragColor = vec4(0.1, 0.1, 0.1, 1.0);
+    }
+    else if (!isBlack) {
+        // White color
+        fragColor = vec4(0.9, 0.9, 0.9, 1.0);
     }
 }
 )";
