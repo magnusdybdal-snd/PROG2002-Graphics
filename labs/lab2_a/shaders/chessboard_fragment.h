@@ -6,11 +6,9 @@
 const std::string chessboardFragmentShaderSrc = R"(
 #version 430 core
 
-in vec2 v_GridPos;              // Revieced from vertex shader (0, 1) in range
-
-uniform ivec2 u_SelectedTile;   // Selected tile coordinates
-
-out vec4 fragColor;
+in vec2 v_GridPos;              // INPUT: Interpolated from vertex shader (0 to 1)
+uniform ivec2 u_SelectedTile;   // INPUT: From C++ code (which tile is selected)
+out vec4 fragColor;             // OUTPUT: Final pixel color
 
 void main()
 {
@@ -18,7 +16,7 @@ void main()
     int tileX = int(floor(v_GridPos.x * 8.0));
     int tileY = int(floor(v_GridPos.y * 8.0));
 
-    // Clamp to valid range
+    // Clamp to valid range for safety
     tileX = clamp(tileX, 0, 7);
     tileY = clamp(tileY, 0, 7);
 

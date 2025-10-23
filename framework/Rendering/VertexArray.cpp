@@ -49,7 +49,7 @@ void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuf
             ShaderDataTypeToOpenGLBaseType(attribute.Type), // Type
             attribute.Normalized,                           // Normalized
             layout.GetStride(),                             // Stride
-            (const void*)(intptr_t)attribute.Offset                   // Offset
+            (const void*)(intptr_t)attribute.Offset         // Offset
         );
         index++;
     }
