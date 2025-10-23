@@ -4,6 +4,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader
 {
@@ -15,6 +16,7 @@ public:
   void Unbind() const;
   void UploadUniformFloat2(const std::string& name, const glm::vec2& vector);
   void UploadUniformInt2(const std::string& name, const glm::ivec2& vector);
+  void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 private:
   GLuint VertexShader;
