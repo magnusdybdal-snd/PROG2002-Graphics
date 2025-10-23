@@ -10,6 +10,8 @@
 #include "Shader.h"
 
 #include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Lab3Application : public GLFWApplication
 {
@@ -26,6 +28,8 @@ private:
 
     std::unique_ptr<VertexArray> m_chessboardVAO;
     std::unique_ptr<Shader> m_shaderProgram;
+
+    glm::mat4 m_projectionMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;

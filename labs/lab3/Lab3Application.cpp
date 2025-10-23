@@ -1,5 +1,7 @@
 #include "Lab3Application.h"
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "shaders/chessboard_vertex.h"
 #include "shaders/chessboard_fragment.h"
@@ -25,6 +27,16 @@ unsigned Lab3Application::Init()
     if (GLFWApplication::Init() != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
+
+    // Projection matrix
+    m_projectionMatrix = glm::perspective(
+        glm::radians(45.0f),    // FOV
+        1.0f,                   // Aspect ratio
+        1.0f,                   // Near plane
+        10.0f                   // Far plane
+    );
+
+    std::cout << "ProjectionMatrix created..." << std::endl;
 
     std::cout << "Setting up chessboard..." << std::endl;
 
