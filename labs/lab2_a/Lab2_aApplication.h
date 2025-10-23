@@ -7,6 +7,7 @@
 #include "IndexBuffer.h"
 #include "BufferLayout.h"
 #include "VertexArray.h"
+#include "Shader.h"
 
 #include <memory>
 
@@ -24,7 +25,7 @@ public:
 private:
 
     std::unique_ptr<VertexArray> m_chessboardVAO;
-    GLuint m_shaderProgram = 0;
+    std::unique_ptr<Shader> m_shaderProgram;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;

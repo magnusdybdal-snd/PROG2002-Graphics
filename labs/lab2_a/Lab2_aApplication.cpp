@@ -15,10 +15,7 @@ Lab2_aApplication::Lab2_aApplication(const std::string& name, const std::string&
 // Destructor: Cleanup OpenGL resources
 Lab2_aApplication::~Lab2_aApplication()
 {
-    // Smart pointers and class destructors in VAO, VBO, EBO handles cleanup automatically
-    if (m_shaderProgram != 0) {
-        glDeleteProgram(m_shaderProgram);
-    }
+    // Smart pointers and class destructors in VAO, VBO, EBO and Shader handles cleanup automatically
 }
 
 // Initialize - Setup the chessboard geometry and shaders
@@ -38,13 +35,8 @@ unsigned Lab2_aApplication::Init()
     // Create buffers using smart pointers
     auto gridVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
 
-
-    std::cout << "Indices count: " << indices.size() << std::endl;
-    std::cout << "Expected triangles: " << indices.size() / 3 << std::endl;
-
     // After creating the index buffer:
     auto gridIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
-    std::cout << "IndexBuffer count: " << gridIndexBuffer->GetCount() << std::endl;
 
     // Define the buffer layout
     auto gridBufferLayout = BufferLayout(
@@ -58,8 +50,8 @@ unsigned Lab2_aApplication::Init()
     m_chessboardVAO->AddVertexBuffer(gridVertexBuffer);
     m_chessboardVAO->SetIndexBuffer(gridIndexBuffer);
 
-    // Compile shaders
-    m_shaderProgram = CompileShader(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
+    // Create and compile shaders
+    m_shaderProgram = std::make_unique<Shader>(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
 
     // Debugging
     std::cout << "Chessboard setup complete!" << std::endl;
@@ -148,10 +140,11 @@ void Lab2_aApplication::HandleInput()
 // Render the chessboard
 void Lab2_aApplication::RenderChessboard()
 {
-    glUseProgram(m_shaderProgram);
+    m_shaderProgram->Bind();
     m_chessboardVAO->Bind();
 
     // Pass the selected tile to the shader
+    m_shaderProgram->UploadUniformInt2("u_SelectedTile", m_selectedX, m_selectedY);
     GLint selectedTileLoc = glGetUniformLocation(m_shaderProgram, "u_SelectedTile");
     glUniform2i(selectedTileLoc, m_selectedX, m_selectedY);
 
