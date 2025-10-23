@@ -25,6 +25,9 @@ class GLFWApplication
 
     GLFWwindow* GetWindow() const { return m_window; }
 
+    // Basic shader compiler helper
+    GLuint CompileShader(const std::string& vertexShader, const std::string& fragmentShader);
+
     private:
     std::string m_name;
     std::string m_version;
