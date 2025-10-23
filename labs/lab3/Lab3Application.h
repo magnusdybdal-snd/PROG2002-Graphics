@@ -30,6 +30,7 @@ private:
     std::unique_ptr<Shader> m_shaderProgram;
 
     glm::mat4 m_projectionMatrix;
+    glm::mat4 m_viewMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;

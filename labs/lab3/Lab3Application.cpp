@@ -38,6 +38,15 @@ unsigned Lab3Application::Init()
 
     std::cout << "ProjectionMatrix created..." << std::endl;
 
+    // ViewMatrix
+    m_viewMatrix = glm::lookAt(
+        glm::vec3(0.0f, 0.0f, 0.5f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    std::cout << "viewMatrix created..." << std::endl;
+
     std::cout << "Setting up chessboard..." << std::endl;
 
     // Generate a 8x8 grid using Geometric tools
