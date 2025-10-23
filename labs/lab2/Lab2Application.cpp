@@ -171,3 +171,58 @@ void Lab2Application::RenderChessboard()
     // Draw the chessboard
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, (void*)0);
 }
+
+GLuint Lab2Application::CompileShader(const std::string& vertexShaderSrc,
+                                      const std::string& fragmentShaderSrc) 
+{
+    // Converts the shader source code from std::string to raw char pointer
+    auto vertexSrc = vertexShaderSrc.c_str();
+    auto fragmentSrc = fragmentShaderSrc.c_str();
+
+    // Compile vertex shader
+    auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexSrc, nullptr);
+    glCompileShader(vertexShader);
+
+    // Check compilation
+    GLint success;
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+        std::cerr << "Vertex shader compilation failed:\n" << infoLog << std::endl;
+    }
+
+    // Compile fragment shader
+    auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentSrc, nullptr);
+    glCompileShader(fragmentShader);
+
+    // Check compilation
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+        std::cerr << "Fragment shader compilation failed:\n" << infoLog << std::endl;
+    }
+
+    // Create a shader program
+    auto shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    // Check linking
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+        std::cerr << "Shader program linking failed:\n" << infoLog << std::endl;
+    }
+
+    // Shader objects can be deleted when linked to a program
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+  return shaderProgram;
+}

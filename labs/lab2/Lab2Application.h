@@ -30,4 +30,5 @@ private:
     // Private helper methods
     void HandleInput();
     void RenderChessboard();
+    GLuint CompileShader(const std::string& vertexShader, const std::string& fragmentShader);
 };
