@@ -137,8 +137,8 @@ unsigned Lab3Application::Run()
         UpdateCubeRotation();
 
         // clear screen
-        glClearColor(0.8f, 0.2f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        RenderCommands::SetClearColor(glm::vec4(0.8f, 0.2f, 0.2f, 1.0f));
+        RenderCommands::Clear();
 
         // Render the chessboard and cube
         RenderChessboard();
@@ -251,7 +251,7 @@ void Lab3Application::RenderChessboard()
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
 
     // Draw the chessboard
-    glDrawElements(GL_TRIANGLES, m_chessboardVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
 
 // Render the cube
@@ -266,16 +266,16 @@ void Lab3Application::RenderUnitCube()
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
     // Draw the cube in solid color
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    RenderCommands::SetSolidMode();
     m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
-    glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
 
     // Draw the wireframe of the cube
-    glLineWidth(3.0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    RenderCommands::SetLineWidth(3.0f);
+    RenderCommands::SetWireframeMode();
     m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glLineWidth(1.0);
+    RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
+    RenderCommands::SetSolidMode();
+    RenderCommands::SetLineWidth(1.0f);
 
 }

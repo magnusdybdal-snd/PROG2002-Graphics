@@ -30,14 +30,19 @@ namespace RenderCommands
         glClearColor(color.x, color.y, color.z, color.w);
     }
 
-    inline void SetWireframeMode()
+    inline void SetWireframeMode(GLenum face = GL_FRONT_AND_BACK)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(face, GL_LINE);
     }
 
-    inline void SetSolidMode()
+    inline void SetSolidMode(GLenum face = GL_FRONT_AND_BACK)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(face, GL_FILL);
+    }
+
+    inline void SetLineWidth(GLfloat width) 
+    {
+        glLineWidth(width);
     }
 }
 

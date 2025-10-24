@@ -8,6 +8,7 @@
 #include "BufferLayout.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "RenderCommands.h"
 
 #include <memory>
 #include <glm/glm.hpp>
@@ -26,8 +27,8 @@ public:
 
 private:
 
-    std::unique_ptr<VertexArray> m_chessboardVAO;
-    std::unique_ptr<VertexArray> m_unitCubeVAO;
+    std::shared_ptr<VertexArray> m_chessboardVAO;
+    std::shared_ptr<VertexArray> m_unitCubeVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
     std::unique_ptr<Shader> m_unitCubeShaderProgram;
 
