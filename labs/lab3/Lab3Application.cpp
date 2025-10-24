@@ -5,6 +5,8 @@
 
 #include "shaders/chessboard_vertex.h"
 #include "shaders/chessboard_fragment.h"
+#include "shaders/unitCube_vertex.h"
+#include "shaders/unitCube_fragment.h"
 
 // Constructor: Call parent constructor with 800x800 square window
 Lab3Application::Lab3Application(const std::string& name, const std::string& version)
@@ -48,6 +50,7 @@ unsigned Lab3Application::Init()
     std::cout << "viewMatrix created..." << std::endl;
 
     // Start with the id matrix
+    m_unitCubeModelMatrix = glm::mat4(1.0f);
     m_chessboardModelMatrix = glm::mat4(1.0f);
 
     // 1. Scale, upscale by 2
@@ -74,31 +77,41 @@ unsigned Lab3Application::Init()
     auto vertices = GeometricTools::UnitGridGeometry2D<8, 8>();
     auto indices = GeometricTools::UnitGridTopologyTriangles<8, 8>();
 
-    // Create buffers using smart pointers
+    auto UnitCubeVertices = GeometricTools::UnitCubeGeometry3D;
+    auto UnitCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
+
+    // Create vertex buffers using smart pointers
     auto gridVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
+    auto UnitCubeVertexBuffer = std::make_shared<VertexBuffer>(UnitCubeVertices.data(), UnitCubeVertices.size() * sizeof(float));
 
-    // After creating the index buffer:
+    // Creating the index buffers using smart pointers:
     auto gridIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
+    auto UnitCubeIndexBuffer = std::make_shared<IndexBuffer>(UnitCubeIndices.data(), UnitCubeIndices.size());
 
-    // Define the buffer layout
+    // Define the buffer layouts
     auto gridBufferLayout = BufferLayout(
         {{ ShaderDataType::Float2, "position" }}
     );
+    auto UnitCubeBufferLayout = BufferLayout(
+        {{ ShaderDataType::Float3, "cube_position" }}
+    );
 
+    // Set the layouts in the vertex buffer
     gridVertexBuffer->SetLayout(gridBufferLayout);
+    UnitCubeVertexBuffer->SetLayout(UnitCubeBufferLayout);
 
-    // Create and configure vertex array
+    // Create and configure vertex arrays
     m_chessboardVAO = std::make_unique<VertexArray>();
     m_chessboardVAO->AddVertexBuffer(gridVertexBuffer);
     m_chessboardVAO->SetIndexBuffer(gridIndexBuffer);
 
-    // Create and compile shaders
-    m_shaderProgram = std::make_unique<Shader>(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
+    m_unitCubeVAO = std::make_unique<VertexArray>();
+    m_unitCubeVAO->AddVertexBuffer(UnitCubeVertexBuffer);
+    m_unitCubeVAO->SetIndexBuffer(UnitCubeIndexBuffer);
 
-    // Debugging
-    std::cout << "Chessboard setup complete!" << std::endl;
-    std::cout << "Vertices: " << vertices.size() / 2 << std::endl;
-    std::cout << "indices: " << indices.size() << std::endl;
+    // Create and compile shaders
+    m_chessboardShaderProgram = std::make_unique<Shader>(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
+    m_unitCubeShaderProgram = std::make_unique<Shader>(unitCubeVertexShaderSrc, unitCubeFragmentShaderSrc);
 
     return EXIT_SUCCESS;
 }
@@ -122,8 +135,9 @@ unsigned Lab3Application::Run()
         glClearColor(0.8f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Render the chessboard
+        // Render the chessboard and cube
         RenderChessboard();
+        RenderUnitCube();
 
         glfwSwapBuffers(window);
     }
@@ -182,15 +196,30 @@ void Lab3Application::HandleInput()
 // Render the chessboard
 void Lab3Application::RenderChessboard()
 {
-    m_shaderProgram->Bind();
+    m_chessboardShaderProgram->Bind();
     m_chessboardVAO->Bind();
 
     // Pass uniforms to shader
-    m_shaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
-    m_shaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
-    m_shaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
-    m_shaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
+    m_chessboardShaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
+    m_chessboardShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
+    m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
+    m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
 
     // Draw the chessboard
     glDrawElements(GL_TRIANGLES, m_chessboardVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+}
+
+// Render the cube
+void Lab3Application::RenderUnitCube()
+{
+    m_unitCubeShaderProgram->Bind();
+    m_unitCubeVAO->Bind();
+
+    // Pass uniforms to shader
+    m_unitCubeShaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
+    m_unitCubeShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
+    m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
+
+    // Draw the cube
+    glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 }

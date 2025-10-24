@@ -27,11 +27,14 @@ public:
 private:
 
     std::unique_ptr<VertexArray> m_chessboardVAO;
-    std::unique_ptr<Shader> m_shaderProgram;
+    std::unique_ptr<VertexArray> m_unitCubeVAO;
+    std::unique_ptr<Shader> m_chessboardShaderProgram;
+    std::unique_ptr<Shader> m_unitCubeShaderProgram;
 
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;
     glm::mat4 m_chessboardModelMatrix;
+    glm::mat4 m_unitCubeModelMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;
@@ -40,5 +43,6 @@ private:
     // Private helper methods
     void HandleInput();
     void RenderChessboard();
+    void RenderUnitCube();
 };
 #endif // LAB3APPLICATION_H_

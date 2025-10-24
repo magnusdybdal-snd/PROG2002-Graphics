@@ -41,19 +41,14 @@ namespace GeometricTools
 
         // Front face
         0, 1, 2,    2, 3, 0,
-
         // Right face
         1, 5, 6,    6, 2, 1,
-        
         // Back face
         5, 4, 7,    7, 6, 5,
-        
         // Left face
         4, 0, 3,    3, 7, 4,
-        
         // Top face
         3, 2, 6,    6, 7, 3,
-        
         // Bottom face
         4, 5, 1,    1, 0, 4
     };
