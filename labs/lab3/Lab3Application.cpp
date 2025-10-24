@@ -53,6 +53,7 @@ unsigned Lab3Application::Init()
 
     // Start with the id matrix
     m_unitCubeModelMatrix = glm::mat4(1.0f);
+
     m_chessboardModelMatrix = glm::mat4(1.0f);
 
     // 1. Scale, upscale by 2
@@ -133,6 +134,8 @@ unsigned Lab3Application::Run()
         // Handle user input
         HandleInput();
 
+        UpdateCubeRotation();
+
         // clear screen
         glClearColor(0.8f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -197,25 +200,42 @@ void Lab3Application::HandleInput()
 
     // W = Rotate up
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        m_cubeRotationY += rotationSpeed;
+        m_cubeRotationX -= rotationSpeed;
     }
     // S = Rotate down
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        m_cubeRotationY -= rotationSpeed;
+        m_cubeRotationX += rotationSpeed;
     }
     // A = Rotate left
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        m_cubeRotationX -= rotationSpeed;
+        m_cubeRotationY -= rotationSpeed;
     }
     // D = Rotate right
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        m_cubeRotationX += rotationSpeed;
+        m_cubeRotationY += rotationSpeed;
     }
 
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+}
+
+void Lab3Application::UpdateCubeRotation()
+{
+    m_unitCubeModelMatrix = glm::mat4(1.0f);
+
+    m_unitCubeModelMatrix = glm::translate(
+        m_unitCubeModelMatrix,               // Matrix to transform
+        glm::vec3(0.0f, 0.5f, 0.0f));       // Position (X, Y, Z)
+
+    m_unitCubeModelMatrix = glm::rotate(m_unitCubeModelMatrix,
+                                        glm::radians(m_cubeRotationY),
+                                        glm::vec3(0.0f, 1.0f, 0.0f));
+
+    m_unitCubeModelMatrix = glm::rotate(m_unitCubeModelMatrix,
+                                        glm::radians(m_cubeRotationX),
+                                        glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 // Render the chessboard
@@ -246,15 +266,16 @@ void Lab3Application::RenderUnitCube()
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
     // Draw the cube in solid color
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
-    //glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+    glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
     // Draw the wireframe of the cube
+    glLineWidth(3.0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+    glLineWidth(1.0);
 
 }
