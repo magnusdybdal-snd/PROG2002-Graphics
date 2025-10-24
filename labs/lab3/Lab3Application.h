@@ -36,6 +36,9 @@ private:
     glm::mat4 m_chessboardModelMatrix;
     glm::mat4 m_unitCubeModelMatrix;
 
+    float m_cubeRotationX = 0.0f;
+    float m_cubeRotationY = 0.0f;
+
     // Tile selector state (0-7)
     int m_selectedX = 0;
     int m_selectedY = 0;
@@ -44,5 +47,6 @@ private:
     void HandleInput();
     void RenderChessboard();
     void RenderUnitCube();
+    void UpdateCubeRotation();
 };
 #endif // LAB3APPLICATION_H_

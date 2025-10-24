@@ -30,6 +30,8 @@ unsigned Lab3Application::Init()
         return EXIT_FAILURE;
     }
 
+    glEnable(GL_DEPTH_TEST);
+
     // Projection matrix
     m_projectionMatrix = glm::perspective(
         glm::radians(45.0f),    // FOV
@@ -133,7 +135,7 @@ unsigned Lab3Application::Run()
 
         // clear screen
         glClearColor(0.8f, 0.2f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         // Render the chessboard and cube
         RenderChessboard();
@@ -150,33 +152,35 @@ void Lab3Application::HandleInput()
 {
     GLFWwindow* window = GetWindow();
 
+    // ===== CHESSBOARD SELECTED TILE CONTROLS =====
+
     // Simple debouncing; track if key was pressed last frame
     static bool keyWasPressed = false;
     bool keyIsPressed = false;
 
     // Check arrow keys
-    // RIGHT
+    // RIGHT KEY
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedX < 7) {
             m_selectedX++;
         }
         keyIsPressed = true;
     }
-    // LEFT
+    // LEFT KEY
     else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedX > 0) {
             m_selectedX--;
         }
         keyIsPressed = true;
     }
-    // UP
+    // UP KEY
     else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedY < 7) {
             m_selectedY++;
         }
         keyIsPressed = true;
     }
-    // DOWN
+    // DOWN KEY
     else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         if (!keyWasPressed && m_selectedY > 0) {
             m_selectedY--;
@@ -186,6 +190,27 @@ void Lab3Application::HandleInput()
 
     // Update key state for next frame
     keyWasPressed = keyIsPressed;
+    
+    // ===== CUBE ROTATION CONTROLS =====
+
+    const float rotationSpeed = 1.5f;
+
+    // W = Rotate up
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        m_cubeRotationY += rotationSpeed;
+    }
+    // S = Rotate down
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        m_cubeRotationY -= rotationSpeed;
+    }
+    // A = Rotate left
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        m_cubeRotationX -= rotationSpeed;
+    }
+    // D = Rotate right
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        m_cubeRotationX += rotationSpeed;
+    }
 
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -221,9 +246,9 @@ void Lab3Application::RenderUnitCube()
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
     // Draw the cube in solid color
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
-    glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+    //glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
     // Draw the wireframe of the cube
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
