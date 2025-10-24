@@ -6,12 +6,13 @@
 const std::string unitCubeFragmentShaderSrc = R"(
 #version 430 core
 
+uniform vec4 u_Color;           // Color of wireframe
+
 out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
-    // Simple white color for now
-    fragColor = vec4(0.9, 0.9, 0.9, 1.0);
+    fragColor = u_Color;
 }
 )";
 

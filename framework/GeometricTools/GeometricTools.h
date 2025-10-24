@@ -27,7 +27,7 @@ namespace GeometricTools
         -0.5f, -0.5f, 0.5f,     // Bottom left front
          0.5f, -0.5f, 0.5f,     // Bottom right front
          0.5f,  0.5f, 0.5f,     // Top right front
-        -0.5f,  0.5f, 0.5f      // Top left front
+        -0.5f,  0.5f, 0.5f,      // Top left front
 
         // Back facing square
         -0.5f, -0.5f, -0.5f,    // Bottom left back

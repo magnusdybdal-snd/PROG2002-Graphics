@@ -220,6 +220,16 @@ void Lab3Application::RenderUnitCube()
     m_unitCubeShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
-    // Draw the cube
+    // Draw the cube in solid color
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
     glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+    // Draw the wireframe of the cube
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    glDrawElements(GL_TRIANGLES, m_unitCubeVAO->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
 }
