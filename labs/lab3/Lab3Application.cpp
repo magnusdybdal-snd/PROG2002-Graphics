@@ -40,9 +40,9 @@ unsigned Lab3Application::Init()
 
     // ViewMatrix
     m_viewMatrix = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 5.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f)
+        glm::vec3(0.0f, 0.0f, 5.0f),    // Camera position
+        glm::vec3(0.0f, 0.0f, 0.0f),    // 
+        glm::vec3(0.0f, 1.0f, 0.0f)     // Up vector
     );
 
     std::cout << "viewMatrix created..." << std::endl;
@@ -53,18 +53,18 @@ unsigned Lab3Application::Init()
     // 1. Scale, upscale by 2
     m_chessboardModelMatrix = glm::scale(
         m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(1.0f, 1.0f, 0.0f));       // Scale factors (X, Y, Z)
+        glm::vec3(3.0f, 3.0f, 1.0f));       // Scale factors (X, Y, Z)
 
     // 2. Rotate, 60 degrees by x axis
     m_chessboardModelMatrix = glm::rotate(
         m_chessboardModelMatrix,            // Matrix to transform
-        glm::radians(-45.0f),               // Angle (converts degrees to radians)
+        glm::radians(-80.0f),               // Angle (converts degrees to radians)
         glm::vec3(1.0f, 0.0f, 0.0f));       // Which axis to rotate (X, Y, Z)
 
     // 3. Translate (move) - stays at origin
     m_chessboardModelMatrix = glm::translate(
         m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(0.0f, 0.0f, 0.0f));       // Position (X, Y, Z)
+        glm::vec3(0.0f, -1.3f, 0.0f));       // Position (X, Y, Z)
 
     std::cout << "Model matrix created..." << std::endl;
 
