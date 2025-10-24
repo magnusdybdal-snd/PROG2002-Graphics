@@ -25,7 +25,7 @@ namespace RenderCommands
         glDrawElements(primitive, vao->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
 
-    inline void SetClearColor(glm::vec4 color)
+    inline void SetClearColor(const glm::vec4& color)
     {
         glClearColor(color.x, color.y, color.z, color.w);
     }

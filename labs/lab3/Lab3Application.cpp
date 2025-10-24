@@ -104,11 +104,11 @@ unsigned Lab3Application::Init()
     UnitCubeVertexBuffer->SetLayout(UnitCubeBufferLayout);
 
     // Create and configure vertex arrays
-    m_chessboardVAO = std::make_unique<VertexArray>();
+    m_chessboardVAO = std::make_shared<VertexArray>();
     m_chessboardVAO->AddVertexBuffer(gridVertexBuffer);
     m_chessboardVAO->SetIndexBuffer(gridIndexBuffer);
 
-    m_unitCubeVAO = std::make_unique<VertexArray>();
+    m_unitCubeVAO = std::make_shared<VertexArray>();
     m_unitCubeVAO->AddVertexBuffer(UnitCubeVertexBuffer);
     m_unitCubeVAO->SetIndexBuffer(UnitCubeIndexBuffer);
 
