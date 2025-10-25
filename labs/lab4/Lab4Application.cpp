@@ -132,8 +132,10 @@ unsigned Lab4Application::Init()
     auto UnitCubeIndexBuffer = std::make_shared<IndexBuffer>(UnitCubeIndices.data(), UnitCubeIndices.size());
 
     // Define the buffer layouts
-    auto gridBufferLayout = BufferLayout(
-        {{ ShaderDataType::Float2, "position" }}
+    auto gridBufferLayout = BufferLayout({
+        { ShaderDataType::Float2, "position" },
+        { ShaderDataType::Float2, "tcoords" }
+    }
     );
     auto UnitCubeBufferLayout = BufferLayout(
         {{ ShaderDataType::Float3, "cube_position" }}

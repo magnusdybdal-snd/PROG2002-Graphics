@@ -9,7 +9,7 @@ const std::string chessboardFragmentShaderSrc = R"(
 in vec2 v_GridPos;                                              // INPUT:  Interpolated from vertex shader (0 to 1)
 in vec2 v_Tcoords;                                              // INPUT:  tcoords from vertex shader
 uniform ivec2 u_SelectedTile;                                   // INPUT:  From C++ code (which tile is selected)
-layout(binding = 0) uniform sampler2D u_floorTextureSampler     // INPUT:  Floor texture sampler
+layout(binding = 0) uniform sampler2D u_floorTextureSampler;    // INPUT:  Floor texture sampler
 out vec4 fragColor;                                             // OUTPUT: Final pixel color
 
 void main()

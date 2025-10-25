@@ -15,7 +15,7 @@ uniform mat4 u_viewMatrix;
 uniform mat4 u_chessboardModelMatrix;
 
 out vec2 v_GridPos;                         // OUTPUT: Pass grid position to fragment shader
-out vec2 v_Tcoords                          // OUTPUT: Pass texture coords to fragment shader
+out vec2 v_Tcoords;                         // OUTPUT: Pass texture coords to fragment shader
 
 void main() 
 {
@@ -26,7 +26,7 @@ void main()
     v_GridPos = a_Position + 0.5;
 
     // Pass texture coordinates to fragment shader
-    v_Tcoords = a_Tcoords
+    v_Tcoords = a_Tcoords;
 }
 )";
 

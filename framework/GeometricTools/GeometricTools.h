@@ -57,19 +57,19 @@ namespace GeometricTools
     template<int DivisionsX, int DivisionsY>
     constexpr auto UnitGridGeometry2D() {
 
-        // Number of verticies in each direction (x,y) will always be divisions + 1 (2x2 grid have 3 points)
+        // Number of vertices in each direction (x,y) will always be divisions + 1 (2x2 grid have 3 points)
         constexpr int numVertices = (DivisionsX + 1) * (DivisionsY + 1);
         // 2 floats for each coordinate
         constexpr int numFloats = numVertices * 2;
 
-        // Array to hold verticies
+        // Array to hold vertices
         std::array<float, numFloats> vertices {};
         // Step distance for each split on the grid in each direction
         constexpr float stepX = 1.0f / DivisionsX;
         constexpr float stepY = 1.0f / DivisionsY;
 
         int index = 0;
-        // Insert all verticies in the array
+        // Insert all vertices in the array
         for (int y = 0; y <= DivisionsY; ++y) {
             for (int x = 0; x <= DivisionsX; ++x) {
                 vertices[index++] = -0.5f + x * stepX; 
@@ -77,7 +77,7 @@ namespace GeometricTools
             }
         }
 
-        return verticies;
+        return vertices;
     }
 
     template<int DivisionsX, int DivisionsY>
@@ -120,12 +120,12 @@ namespace GeometricTools
     template<unsigned int DivisionsX, unsigned int DivisionsY>
     constexpr auto UnitGridGeometry2DWTCoords() {
 
-        // Number of verticies in each direction (x,y) will always be divisions + 1 (2x2 grid have 3 points)
+        // Number of vertices in each direction (x,y) will always be divisions + 1 (2x2 grid have 3 points)
         constexpr int numVertices = (DivisionsX + 1) * (DivisionsY + 1);
         // 4 floats for each coordinate (2 for pos and 2 for texture)
         constexpr int numFloats = numVertices * 4;
 
-        // Array to hold verticies
+        // Array to hold vertices
         std::array<float, numFloats> vertices {};
 
         // Step distance for each split on the grid in each direction
@@ -133,7 +133,7 @@ namespace GeometricTools
         constexpr float stepY = 1.0f / DivisionsY;
 
         int index = 0;
-        // Insert all verticies with interleaved position and texture coord in the array
+        // Insert all vertices with interleaved position and texture coord in the array
         for (int y = 0; y <= DivisionsY; ++y) {
             for (int x = 0; x <= DivisionsX; ++x) {
                 // Position coordinates (range -0.5 to 0.5)
