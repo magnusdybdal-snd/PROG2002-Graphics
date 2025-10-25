@@ -27,28 +27,29 @@ void main()
 
     // Sample the texture color
     vec4 textureColor = texture(u_floorTextureSampler, v_Tcoords);
+    vec4 chessboardColor;
 
     // Checkerboard pattern
-    //bool isBlack = ((tileX + tileY) % 2) == 0;
+    bool isBlack = ((tileX + tileY) % 2) == 0;
 
     // Set color based on tile type
     if (isSelected) {
         // Selected tile: Green
-        fragColor = vec4(0.0, 0.9, 0.0, 1.0);
-    }
-    //else if (isBlack) {
-        // Black tile
-    //    fragColor = vec4(0.1, 0.1, 0.1, 1.0);
-    //}
-    //else if (!isBlack) {
-        // White color
-    //    fragColor = vec4(0.9, 0.9, 0.9, 1.0);
-    //}
+        fragColor = vec4(0.0, 0.9, 0.0, 1.0) * 0.7 + textureColor * 0.3;
+    } else {
 
-    else {
-        fragColor = textureColor;    
+        if (isBlack) {
+            // Black tile
+            chessboardColor = vec4(0.1, 0.1, 0.1, 1.0);
+        }
+        else if (!isBlack) {
+            // White color
+            chessboardColor = vec4(0.9, 0.9, 0.9, 1.0);
+        }
+
+        fragColor = mix(chessboardColor, textureColor, 0.7);    
     }
 }
 )";
 
-#endif
+#endif // CHESSBOARD_FRAGMENT_H_
