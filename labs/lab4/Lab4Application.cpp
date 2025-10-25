@@ -8,6 +8,9 @@
 #include "shaders/unitCube_vertex.h"
 #include "shaders/unitCube_fragment.h"
 
+// Image data: 3 channels RGB, 24 bpp
+
+
 // Constructor: Call parent constructor with 800x800 square window
 Lab4Application::Lab4Application(const std::string& name, const std::string& version)
     : GLFWApplication(name, version, 800, 800),
