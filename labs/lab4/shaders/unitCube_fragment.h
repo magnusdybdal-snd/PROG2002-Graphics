@@ -6,13 +6,17 @@
 const std::string unitCubeFragmentShaderSrc = R"(
 #version 430 core
 
+in vec3 vs_position;            // INPUT: Position from vertex shader
+
+layout(binding = 1) uniform samplerCube u_cubeTexture;
+
 uniform vec4 u_Color;           // Color of wireframe
 
 out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
-    fragColor = u_Color;
+    fragColor = texture(u_cubeTexture, vs_position);
 }
 )";
 

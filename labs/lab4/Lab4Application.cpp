@@ -37,6 +37,7 @@ unsigned Lab4Application::Init()
     glEnable(GL_DEPTH_TEST);
 
     GLuint floorTexture = this->LoadTexture(std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
+    GLuint cubeTexture = this->LoadCubeMap(std::string(TEXTURES_DIR) + "cube_texture.jpg", 1);
 
     // Projection matrix
     m_projectionMatrix = glm::perspective(
@@ -275,19 +276,9 @@ void Lab4Application::RenderUnitCube()
     m_unitCubeShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
-    // Draw the cube in solid color
+    // Draw the cube with texture
     RenderCommands::SetSolidMode();
-    m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
     RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
-
-    // Draw the wireframe of the cube
-    RenderCommands::SetLineWidth(3.0f);
-    RenderCommands::SetWireframeMode();
-    m_unitCubeShaderProgram->UploadUniformFloat4("u_Color", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
-    RenderCommands::SetSolidMode();
-    RenderCommands::SetLineWidth(1.0f);
-
 }
 
 GLuint Lab4Application::LoadCubeMap(const std::string& filepath, GLuint slot, int channels) {
