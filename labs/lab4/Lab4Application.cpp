@@ -39,6 +39,7 @@ unsigned Lab4Application::Init()
     GLuint floorTexture = this->LoadTexture(std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
     GLuint cubeTexture = this->LoadCubeMap(std::string(TEXTURES_DIR) + "cube_texture.jpg", 1);
 
+
     // Projection matrix
     m_projectionMatrix = glm::perspective(
         glm::radians(45.0f),    // FOV
