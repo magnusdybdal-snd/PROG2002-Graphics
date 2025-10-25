@@ -50,5 +50,6 @@ private:
     void RenderChessboard();
     void RenderUnitCube();
     void UpdateCubeRotation();
+    GLuint LoadTexture(const std::string& filepath, GLuint slot, int channels = STBI_rgb);
 };
 #endif // LAB4APPLICATION_H_

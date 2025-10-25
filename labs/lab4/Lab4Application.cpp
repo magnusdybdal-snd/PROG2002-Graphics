@@ -36,39 +36,7 @@ unsigned Lab4Application::Init()
     // Enable depth testing for rendering 3d objects in correct order
     glEnable(GL_DEPTH_TEST);
 
-    std::string filepath = std::string(TEXTURES_DIR) + "floor_texture.jpg";
-
-    // Loading texture for chessboard floor
-    int width, height, bpp;
-    auto pixels = stbi_load(filepath.c_str(), &width, &height, &bpp, STBI_rgb);
-
-    if (!pixels) {
-        std::cerr << "Failed to load texture!" << std::endl;
-        return 0;
-    }
-
-    // Textures
-    GLuint tex;
-    glGenTextures(1, &tex);
-
-    GLuint slot = 0;
-    glActiveTexture(GL_TEXTURE0 + slot); // Specify texture unit
-    glBindTexture(GL_TEXTURE_2D, tex);
-
-    // Transfer the image data to our openGL texture object
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-    //Wrapping
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //Filtering
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Free memory no longer used after passing texture data
-    if (pixels)
-        stbi_image_free(pixels);
-
+    GLuint floorTexture = this->LoadTexture(std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
 
     // Projection matrix
     m_projectionMatrix = glm::perspective(
@@ -320,4 +288,62 @@ void Lab4Application::RenderUnitCube()
     RenderCommands::SetSolidMode();
     RenderCommands::SetLineWidth(1.0f);
 
+}
+
+GLuint Lab4Application::LoadTexture(const std::string& filepath, GLuint slot, int channels) {
+    int width, height, bpp;
+    auto pixels = stbi_load(filepath.c_str(), &width, &height, &bpp, channels);
+
+    if (!pixels) {
+        std::cerr << "Failed to load texture!" << std::endl;
+        return 0;
+    }
+
+    GLuint tex;
+    glGenTextures(1, &tex);
+
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    // Determen the correct OpenGL format based on channels
+    GLenum internalFormat;
+    GLenum format;
+
+    switch(channels) {
+        case STBI_grey:
+            internalFormat = GL_R8;
+            format = GL_RED;
+            break;
+        case STBI_grey_alpha:
+            internalFormat = GL_RG8;
+            format = GL_RG;
+            break;
+        case STBI_rgb:
+            internalFormat = GL_RGB8;
+            format = GL_RGB;
+            break;
+        case STBI_rgb_alpha:
+            internalFormat = GL_RGBA8;
+            format = GL_RGBA;
+            break;
+        default:
+            std::cerr << "Unsupported channel format!" << std::endl;
+            stbi_image_free(pixels);
+            return 0;        
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, pixels); 
+
+    // Wrapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //Filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if (pixels) {
+        stbi_image_free(pixels);
+    }
+
+    return tex;
 }
