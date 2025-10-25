@@ -25,6 +25,8 @@ add_custom_command(
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     TEXTURES_DIR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/")
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE STB_IMAGE_IMPLEMENTATION)
+target_compile_definitions(${PROJECT_NAME} PRIVATE STB_IMAGE_STATIC)
 
 # glfw, glad and OpenGL::GL are linked trough GLFWApplication
 target_link_libraries(lab4 
@@ -32,4 +34,5 @@ PRIVATE
 Framework::GeometricTools
 Framework::GLFWApplication
 Framework::Rendering
+stb
 )

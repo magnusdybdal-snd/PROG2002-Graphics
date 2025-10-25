@@ -33,7 +33,42 @@ unsigned Lab4Application::Init()
         return EXIT_FAILURE;
     }
 
+    // Enable depth testing for rendering 3d objects in correct order
     glEnable(GL_DEPTH_TEST);
+
+    std::string filepath = std::string(TEXTURES_DIR) + "floor_texture.jpg";
+
+    // Loading texture for chessboard floor
+    int width, height, bpp;
+    auto pixels = stbi_load(filepath.c_str(), &width, &height, &bpp, STBI_rgb);
+
+    if (!pixels) {
+        std::cerr << "Failed to load texture!" << std::endl;
+        return 0;
+    }
+
+    // Textures
+    GLuint tex;
+    glGenTextures(1, &tex);
+
+    GLuint slot = 0;
+    glActiveTexture(GL_TEXTURE0 + slot); // Specify texture unit
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    // Transfer the image data to our openGL texture object
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+    //Wrapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //Filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Free memory no longer used after passing texture data
+    if (pixels)
+        stbi_image_free(pixels);
+
 
     // Projection matrix
     m_projectionMatrix = glm::perspective(
@@ -54,6 +89,7 @@ unsigned Lab4Application::Init()
 
     std::cout << "viewMatrix created..." << std::endl;
 
+    // ModelMatrix
     // Start with the id matrix
     m_unitCubeModelMatrix = glm::mat4(1.0f);
 
@@ -80,9 +116,10 @@ unsigned Lab4Application::Init()
     std::cout << "Setting up chessboard..." << std::endl;
 
     // Generate a 8x8 grid using Geometric tools
-    auto vertices = GeometricTools::UnitGridGeometry2D<8, 8>();
+    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<8, 8>();
     auto indices = GeometricTools::UnitGridTopologyTriangles<8, 8>();
 
+    // Generate vertices and indices for the cube
     auto UnitCubeVertices = GeometricTools::UnitCubeGeometry3D;
     auto UnitCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
 

@@ -58,12 +58,12 @@ namespace GeometricTools
     constexpr auto UnitGridGeometry2D() {
 
         // Number of verticies in each direction (x,y) will always be divisions + 1 (2x2 grid have 3 points)
-        constexpr int numVerticies = (DivisionsX + 1) * (DivisionsY + 1);
+        constexpr int numVertices = (DivisionsX + 1) * (DivisionsY + 1);
         // 2 floats for each coordinate
-        constexpr int numFloats = numVerticies * 2;
+        constexpr int numFloats = numVertices * 2;
 
         // Array to hold verticies
-        std::array<float, numFloats> verticies {};
+        std::array<float, numFloats> vertices {};
         // Step distance for each split on the grid in each direction
         constexpr float stepX = 1.0f / DivisionsX;
         constexpr float stepY = 1.0f / DivisionsY;
@@ -72,8 +72,8 @@ namespace GeometricTools
         // Insert all verticies in the array
         for (int y = 0; y <= DivisionsY; ++y) {
             for (int x = 0; x <= DivisionsX; ++x) {
-                verticies[index++] = -0.5f + x * stepX; 
-                verticies[index++] = -0.5f + y * stepY; 
+                vertices[index++] = -0.5f + x * stepX; 
+                vertices[index++] = -0.5f + y * stepY; 
             }
         }
 
@@ -115,5 +115,62 @@ namespace GeometricTools
         }
 
         return indices;
+    }
+
+    template<unsigned int DivisionsX, unsigned int DivisionsY>
+    constexpr auto UnitGridGeometry2DWTCoords() {
+
+        // Number of verticies in each direction (x,y) will always be divisions + 1 (2x2 grid have 3 points)
+        constexpr int numVertices = (DivisionsX + 1) * (DivisionsY + 1);
+        // 4 floats for each coordinate (2 for pos and 2 for texture)
+        constexpr int numFloats = numVertices * 4;
+
+        // Array to hold verticies
+        std::array<float, numFloats> vertices {};
+
+        // Step distance for each split on the grid in each direction
+        constexpr float stepX = 1.0f / DivisionsX;
+        constexpr float stepY = 1.0f / DivisionsY;
+
+        int index = 0;
+        // Insert all verticies with interleaved position and texture coord in the array
+        for (int y = 0; y <= DivisionsY; ++y) {
+            for (int x = 0; x <= DivisionsX; ++x) {
+                // Position coordinates (range -0.5 to 0.5)
+                vertices[index++] = -0.5f + x * stepX; 
+                vertices[index++] = -0.5f + y * stepY; 
+
+                // Texture coordinates (range 0.0 to 1.0)
+                vertices[index++] = static_cast<float>(x) / DivisionsX;
+                vertices[index++] = static_cast<float>(y) / DivisionsY;
+            }
+        }
+        return vertices;
+    }
+
+    inline std::vector<float> UnitGridGeometry2DWTCoords(unsigned int DivisionsX, unsigned int DivisionsY) {
+
+        int numVertices = (DivisionsX + 1) * (DivisionsY + 1);
+        int numFloats = numVertices * 4;
+
+        std::vector<float> vertices(numFloats);
+
+        float stepX = 1.0f / DivisionsX;
+        float stepY = 1.0f / DivisionsY;
+
+        int index = 0;
+
+        for (int y = 0; y <= DivisionsY; ++y) {
+            for (int x = 0; x <= DivisionsX; ++x) {
+                // Position coordinates (range -0.5 to 0.5)
+                vertices[index++] = -0.5f + x * stepX; 
+                vertices[index++] = -0.5f + y * stepY; 
+
+                // Texture coordinates (range 0.0 to 1.0)
+                vertices[index++] = static_cast<float>(x) / DivisionsX;
+                vertices[index++] = static_cast<float>(y) / DivisionsY;
+            }
+        }
+        return vertices;
     }
 }

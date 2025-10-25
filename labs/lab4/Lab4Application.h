@@ -13,6 +13,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <stb_image.h>
 
 class Lab4Application : public GLFWApplication
 {
