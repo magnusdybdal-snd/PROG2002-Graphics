@@ -36,6 +36,11 @@ unsigned Lab4Application::Init()
     // Enable depth testing for rendering 3d objects in correct order
     glEnable(GL_DEPTH_TEST);
 
+    // Enable blending
+    glEnable(GL_BLEND);
+    // Set the blending function: s*alpha + d(1-alpha)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     GLuint floorTexture = this->LoadTexture(std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
     GLuint cubeTexture = this->LoadCubeMap(std::string(TEXTURES_DIR) + "cube_texture.jpg", 1);
 
@@ -142,17 +147,14 @@ unsigned Lab4Application::Run()
     {
         // Process events
         glfwPollEvents();
-
-        // Handle user input
         HandleInput();
-
         UpdateCubeRotation();
 
         // clear screen
         RenderCommands::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         RenderCommands::Clear();
 
-        // Render the chessboard and cube
+        // Render the chessboard and cube: Opaque first then transp
         RenderChessboard();
         RenderUnitCube();
 
@@ -313,8 +315,10 @@ void Lab4Application::RenderUnitCube()
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
     // Draw the cube with texture
+    glDisable(GL_DEPTH_TEST);       //glDepthMask(GL_FALSE) If you have multiple overlapping transp objects!!!
     RenderCommands::SetSolidMode();
     RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
+    glEnable(GL_DEPTH_TEST);
 }
 
 GLuint Lab4Application::LoadCubeMap(const std::string& filepath, GLuint slot, int channels) {

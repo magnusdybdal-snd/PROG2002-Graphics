@@ -18,7 +18,11 @@ out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
-    fragColor = mix(u_cubeBlendColor, texture(u_cubeTexture, vs_position), 0.7);
+
+    vec4 finalColor = mix(u_cubeBlendColor, texture(u_cubeTexture, vs_position), 0.7); // Blend texture and color
+
+    // Semi transp, alpha 0.5
+    fragColor = vec4(finalColor.rgb, 0.5);
 }
 )";
 
