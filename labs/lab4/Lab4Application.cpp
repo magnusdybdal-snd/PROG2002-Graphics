@@ -41,34 +41,22 @@ unsigned Lab4Application::Init()
     // Set the blending function: s*alpha + d(1-alpha)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Creating texture manager and loading textures
     auto textureManager = TextureManager::GetInstance();
-
     textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
     textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "cube_texture.jpg", 1);
 
-    // Projection matrix
-    m_projectionMatrix = glm::perspective(
-        glm::radians(45.0f),    // FOV
-        1.0f,                   // Aspect ratio
-        1.0f,                   // Near plane
-        10.0f                   // Far plane
+    // Setting up the camera
+    m_camera = std::make_unique<PerspectiveCamera>(
+        PerspectiveCamera::Frustrum{45.0f, 1.0f, 1.0f, 1.0f, 10.0f},
+        glm::vec3(0.0f, 0.0f, 5.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
     );
 
-    std::cout << "ProjectionMatrix created..." << std::endl;
-
-    // ViewMatrix
-    m_viewMatrix = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 5.0f),    // Camera position
-        glm::vec3(0.0f, 0.0f, 0.0f),    // 
-        glm::vec3(0.0f, 1.0f, 0.0f)     // Up vector
-    );
-
-    std::cout << "viewMatrix created..." << std::endl;
-
-    // ModelMatrix
+    // ModelMatrices for chessboard and unit cube
     // Start with the id matrix
     m_unitCubeModelMatrix = glm::mat4(1.0f);
-
     m_chessboardModelMatrix = glm::mat4(1.0f);
 
     // 1. Scale, upscale by 2
@@ -92,8 +80,8 @@ unsigned Lab4Application::Init()
     std::cout << "Setting up chessboard..." << std::endl;
 
     // Generate a 8x8 grid using Geometric tools
-    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<8, 8>();
-    auto indices = GeometricTools::UnitGridTopologyTriangles<8, 8>();
+    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<GRID_SIZE, GRID_SIZE>();
+    auto indices = GeometricTools::UnitGridTopologyTriangles<GRID_SIZE, GRID_SIZE>();
 
     // Generate vertices and indices for the cube
     auto UnitCubeVertices = GeometricTools::UnitCubeGeometry3D;
@@ -155,7 +143,7 @@ unsigned Lab4Application::Run()
         RenderCommands::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         RenderCommands::Clear();
 
-        // Render the chessboard and cube: Opaque first then transp
+        // Render scene: chessboard first, then transparent cube
         RenderChessboard();
         RenderUnitCube();
 
@@ -179,7 +167,7 @@ void Lab4Application::HandleInput()
     // Check arrow keys
     // RIGHT KEY
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedX < 7) {
+        if (!keyWasPressed && m_selectedX < MAX_GRID_INDEX) {
             m_selectedX++;
         }
         keyIsPressed = true;
@@ -193,7 +181,7 @@ void Lab4Application::HandleInput()
     }
     // UP KEY
     else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedY < 7) {
+        if (!keyWasPressed && m_selectedY < MAX_GRID_INDEX) {
             m_selectedY++;
         }
         keyIsPressed = true;
@@ -290,12 +278,14 @@ void Lab4Application::UpdateCubeRotation()
 // Render the chessboard
 void Lab4Application::RenderChessboard()
 {
+    glEnable(GL_DEPTH_TEST);
+
+    // Bind the shader program and vao for the chessboard
     m_chessboardShaderProgram->Bind();
     m_chessboardVAO->Bind();
 
     // Pass uniforms to shader
-    m_chessboardShaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
-    m_chessboardShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
+    m_chessboardShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
 
@@ -306,18 +296,19 @@ void Lab4Application::RenderChessboard()
 // Render the cube
 void Lab4Application::RenderUnitCube()
 {
+    // Disable depth testing for transparent cube to prevent z-fighting
+    glDisable(GL_DEPTH_TEST);       //glDepthMask(GL_FALSE) If you have multiple overlapping transp objects!!!
+
+    // Bind the shader program and vao for the cube
     m_unitCubeShaderProgram->Bind();
     m_unitCubeVAO->Bind();
 
     // Pass uniforms to shader
     m_unitCubeShaderProgram->UploadUniformFloat4("u_cubeBlendColor", m_cubeBlendColor);
-    m_unitCubeShaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
-    m_unitCubeShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
+    m_unitCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
     // Draw the cube with texture
-    glDisable(GL_DEPTH_TEST);       //glDepthMask(GL_FALSE) If you have multiple overlapping transp objects!!!
     RenderCommands::SetSolidMode();
     RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
-    glEnable(GL_DEPTH_TEST);
 }

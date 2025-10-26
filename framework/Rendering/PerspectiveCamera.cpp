@@ -20,4 +20,14 @@ void PerspectiveCamera::RecalculateMatrix()
         this->CameraFrustrum.near,
         this->CameraFrustrum.far
     );
+
+    // View matrix
+    this->ViewMatrix = glm::lookAt(
+        this->Position,
+        this->LookAt,
+        this->UpVector
+    );
+
+    // Combined viewprojection matrix
+    this->ViewProjectionMatrix = this->ProjectionMatrix * this->ViewMatrix;
 }

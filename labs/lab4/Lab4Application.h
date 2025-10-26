@@ -10,6 +10,8 @@
 #include "Shader.h"
 #include "RenderCommands.h"
 #include "TextureManager.h"
+#include "Camera.h"
+#include "PerspectiveCamera.h"
 
 #include <memory>
 #include <glm/glm.hpp>
@@ -32,6 +34,7 @@ private:
     std::shared_ptr<VertexArray> m_unitCubeVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
     std::unique_ptr<Shader> m_unitCubeShaderProgram;
+    std::unique_ptr<PerspectiveCamera> m_camera;
 
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;

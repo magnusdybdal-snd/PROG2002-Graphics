@@ -4,6 +4,8 @@ add_library(Rendering
     VertexArray.cpp
     Shader.cpp
     TextureManager.cpp
+    PerspectiveCamera.cpp
+    OrthographicCamera.cpp
 )
 
 add_library(Framework::Rendering ALIAS Rendering)
