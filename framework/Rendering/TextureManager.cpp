@@ -1,6 +1,9 @@
 // This is the TextureManager.cpp
 #include "TextureManager.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #include <iostream>
 
 bool TextureManager::LoadTexture2D(const std::string& name, const std::string& filePath, GLuint unit, int channels, bool mipMap)
@@ -42,6 +45,11 @@ bool TextureManager::LoadTexture2D(const std::string& name, const std::string& f
             return false;        
     }
 
+    //Generate a texture object and upload the loaded image to it.
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glActiveTexture(GL_TEXTURE0 + unit); // Texture Unit
+    glBindTexture(GL_TEXTURE_2D, tex);
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
     if (mipMap)

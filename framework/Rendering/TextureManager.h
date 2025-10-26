@@ -4,7 +4,6 @@
 
 // External libraries
 #include <glad/glad.h>
-#include <stb_image.h>
 
 // STD includes
 #include <string>
