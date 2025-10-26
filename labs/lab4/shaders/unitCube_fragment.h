@@ -10,13 +10,15 @@ in vec3 vs_position;            // INPUT: Position from vertex shader
 
 layout(binding = 1) uniform samplerCube u_cubeTexture;
 
+uniform vec4 u_cubeBlendColor = vec4(0.0, 0.0, 0.0, 0.0);
+
 uniform vec4 u_Color;           // Color of wireframe
 
 out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
-    fragColor = texture(u_cubeTexture, vs_position);
+    fragColor = mix(u_cubeBlendColor, texture(u_cubeTexture, vs_position), 0.7);
 }
 )";
 

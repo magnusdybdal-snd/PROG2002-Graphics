@@ -149,7 +149,7 @@ unsigned Lab4Application::Run()
         UpdateCubeRotation();
 
         // clear screen
-        RenderCommands::SetClearColor(glm::vec4(0.8f, 0.2f, 0.2f, 1.0f));
+        RenderCommands::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         RenderCommands::Clear();
 
         // Render the chessboard and cube
@@ -234,7 +234,7 @@ void Lab4Application::HandleInput()
     // 1 = Red
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
         if (!keyWasPressed) {
-            m_cubeBlendColor = glm::vec4(1.0f, 0.2f, 0.2f, 1.0f); 
+            m_cubeBlendColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f); 
         }
         colorKeyIsPressed = true;
     }
@@ -307,6 +307,7 @@ void Lab4Application::RenderUnitCube()
     m_unitCubeVAO->Bind();
 
     // Pass uniforms to shader
+    m_unitCubeShaderProgram->UploadUniformFloat4("u_cubeBlendColor", m_cubeBlendColor);
     m_unitCubeShaderProgram->UploadUniformMat4("u_projectionMatrix", m_projectionMatrix);
     m_unitCubeShaderProgram->UploadUniformMat4("u_viewMatrix", m_viewMatrix);
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
