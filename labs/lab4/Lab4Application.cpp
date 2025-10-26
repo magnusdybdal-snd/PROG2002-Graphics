@@ -233,28 +233,28 @@ void Lab4Application::HandleInput()
 
     // 1 = Red
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-        if (!keyWasPressed) {
+        if (!colorKeyWasPressed) {
             m_cubeBlendColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f); 
         }
         colorKeyIsPressed = true;
     }
     // 2 = Green
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-        if (!keyWasPressed) {
+        if (!colorKeyWasPressed) {
             m_cubeBlendColor = glm::vec4(0.2f, 1.2f, 0.2f, 1.0f); 
         }
         colorKeyIsPressed = true;
     }
     // 3 = Blue
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
-        if (!keyWasPressed) {
+        if (!colorKeyWasPressed) {
             m_cubeBlendColor = glm::vec4(0.2f, 0.2f, 1.0f, 1.0f); 
         }
         colorKeyIsPressed = true;
     }
     // 0 = No color blend
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
-        if (!keyWasPressed) {
+        if (!colorKeyWasPressed) {
             m_cubeBlendColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); 
         }
         colorKeyIsPressed = true;
