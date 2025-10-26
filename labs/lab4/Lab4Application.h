@@ -37,6 +37,7 @@ private:
     glm::mat4 m_viewMatrix;
     glm::mat4 m_chessboardModelMatrix;
     glm::mat4 m_unitCubeModelMatrix;
+    glm::vec4 m_cubeBlendColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f); // Default no color
 
     float m_cubeRotationX = 0.0f;
     float m_cubeRotationY = 0.0f;

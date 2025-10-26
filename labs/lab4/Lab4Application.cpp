@@ -227,6 +227,40 @@ void Lab4Application::HandleInput()
         m_cubeRotationY += rotationSpeed;
     }
 
+    // ===== CUBE COLOR BLEND CONTROLS ====
+    static bool colorKeyWasPressed = false;
+    bool colorKeyIsPressed = false;
+
+    // 1 = Red
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        if (!keyWasPressed) {
+            m_cubeBlendColor = glm::vec4(1.0f, 0.2f, 0.2f, 1.0f); 
+        }
+        colorKeyIsPressed = true;
+    }
+    // 2 = Green
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        if (!keyWasPressed) {
+            m_cubeBlendColor = glm::vec4(0.2f, 1.2f, 0.2f, 1.0f); 
+        }
+        colorKeyIsPressed = true;
+    }
+    // 3 = Blue
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        if (!keyWasPressed) {
+            m_cubeBlendColor = glm::vec4(0.2f, 0.2f, 1.0f, 1.0f); 
+        }
+        colorKeyIsPressed = true;
+    }
+    // 0 = No color blend
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+        if (!keyWasPressed) {
+            m_cubeBlendColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); 
+        }
+        colorKeyIsPressed = true;
+    }
+    colorKeyWasPressed = colorKeyIsPressed;
+
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
