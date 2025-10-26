@@ -9,6 +9,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "RenderCommands.h"
+#include "TextureManager.h"
 
 #include <memory>
 #include <glm/glm.hpp>

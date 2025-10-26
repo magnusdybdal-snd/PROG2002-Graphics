@@ -31,8 +31,8 @@ public:
   {return TextureManager::Instance != nullptr?TextureManager::Instance: TextureManager::Instance = new TextureManager(); }
 
 public:
-  bool LoadTexture2DRGBA(const std::string& name, const std::string& filepath, GLuint unit, bool mipMap=true);
-  bool LoadCubeMapRGBA(const std::string& name, const std::string& filePath, GLuint unit, bool mipMap=true);
+  bool LoadTexture2D(const std::string& name, const std::string& filepath, GLuint unit, int channels = 0, bool mipMap=true);
+  bool LoadCubeMap(const std::string& name, const std::string& filePath, GLuint unit, int channels = 0, bool mipMap=true);
   GLuint GetUnitByName(const std::string& name) const;
 
 private:
