@@ -1,0 +1,67 @@
+#ifndef ASSIGNMENTAPPLICATION_H_
+#define ASSIGNMENTAPPLICATION_H_
+
+#include "GLFWApplication.h"
+#include "GeometricTools.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "BufferLayout.h"
+#include "VertexArray.h"
+#include "Shader.h"
+#include "RenderCommands.h"
+#include "TextureManager.h"
+#include "PerspectiveCamera.h"
+
+#include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+class AssignmentApplication : public GLFWApplication
+{
+public:
+
+    AssignmentApplication(const std::string& name, const std::string& version);
+    ~AssignmentApplication();
+
+    // Override base class methods
+    unsigned Init() override;
+    unsigned Run() override;
+
+private:
+
+    // ===== GRID CONSTANTS =====
+    // static constexpr int GRID_SIZE = 8;
+    // static constexpr int MAX_GRID_INDEX = GRID_SIZE - 1;
+    // static constexpr int MIN_GRID_INDEX = 0;
+    
+    // ===== CHESSBOARD CONSTANTS =====
+    // static constexpr float CHESSBOARD_SCALE = 3.0f;
+    // static constexpr float CHESSBOARD_TILT_ANGLE = -80.0f;  // degrees
+    // static constexpr float CHESSBOARD_Y_OFFSET = -1.3f;
+    
+    // ===== CAMERA CONSTANTS =====
+    // static constexpr float CAMERA_FOV = 45.0f;              // degrees
+    // static constexpr float CAMERA_ASPECT_RATIO = 1.0f;
+    // static constexpr float CAMERA_NEAR_PLANE = 1.0f;
+    // static constexpr float CAMERA_FAR_PLANE = 10.0f;
+    // static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
+
+    // std::shared_ptr<VertexArray> m_chessboardVAO;
+    // std::unique_ptr<Shader> m_chessboardShaderProgram;
+    // std::unique_ptr<PerspectiveCamera> m_camera;
+
+    // glm::mat4 m_chessboardModelMatrix;
+
+    // Tile selector state (0-7)
+    int m_selectedX = 0;
+    int m_selectedY = 0;
+
+    // Private helper methods
+    void HandleInput();
+    // void RenderChessboard();
+    // void InitializeTextures();
+    // void InitializeChessboard();
+    // void InitializeShaders();
+    // void InputHandleTileSelection(GLFWwindow* window);
+};
+#endif // AssignmentApplication_H_
