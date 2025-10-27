@@ -62,6 +62,11 @@ void Shader::UploadUniformMat4(const std::string &name, const glm::mat4 &matrix)
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::UploadUniformInt(const std::string &name, int value)
+{
+    glUniform1i(GetUniformLocation(name), value);
+}
+
 GLint Shader::GetUniformLocation(const std::string &name)
 {
     GLint location = glGetUniformLocation(ShaderProgram, name.c_str());

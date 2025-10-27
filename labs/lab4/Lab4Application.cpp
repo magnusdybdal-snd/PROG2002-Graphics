@@ -234,6 +234,7 @@ void Lab4Application::RenderChessboard()
     m_chessboardShaderProgram->UploadUniformMat4("u_viewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
+    m_chessboardShaderProgram->UploadUniformInt("u_Gridsize",GRID_SIZE);
 
     // Draw the chessboard
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
