@@ -24,9 +24,16 @@ unsigned AssignmentApplication::Init()
     if (GLFWApplication::Init() != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
-    std::cout << "beofre init chess";
+
+    // =============== CAMERA SETUP ===============
+    m_camera = std::make_unique<PerspectiveCamera>(
+        PerspectiveCamera::Frustrum{CAMERA_FOV, CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE},
+        glm::vec3(0.0f, 0.0f, 5.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
     InitializeChessboard();
-    std::cout << "init chessboard yoho";
     InitializeShaders();
 
     return EXIT_SUCCESS;
@@ -42,14 +49,13 @@ unsigned AssignmentApplication::Run()
     // Main rendering loop
     while (!glfwWindowShouldClose(window)) 
     {
-        // Process events
-        glfwPollEvents();
-        HandleInput();
-        
         // clear screen
         RenderCommands::SetClearColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
         RenderCommands::Clear();
 
+        // Process events
+        glfwPollEvents();
+        HandleInput();
         RenderChessboard();
 
         glfwSwapBuffers(window);
@@ -77,6 +83,7 @@ void AssignmentApplication::RenderChessboard()
 
     // Pass uniforms to shader
     m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
+    m_chessboardShaderProgram->UploadUniformMat4("u_viewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformInt("u_Gridsize",GRID_SIZE);
 
     // Draw the chessboard
@@ -85,8 +92,6 @@ void AssignmentApplication::RenderChessboard()
 
 void AssignmentApplication::InitializeChessboard()
 {
-
-    std::cout << "inside initi function";
     // ----------------------------------Geometry Setup---------------------------------------
 
     // Generate a 8x8 grid using Geometric tools
