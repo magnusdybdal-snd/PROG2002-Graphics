@@ -29,7 +29,26 @@ public:
 
 private:
 
-    static int constexpr GRID_SIZE = 8;
+    // ===== GRID CONSTANTS =====
+    static constexpr int GRID_SIZE = 8;
+    static constexpr int MAX_GRID_INDEX = GRID_SIZE - 1;
+    static constexpr int MIN_GRID_INDEX = 0;
+    
+    // ===== CHESSBOARD CONSTANTS =====
+    static constexpr float CHESSBOARD_SCALE = 3.0f;
+    static constexpr float CHESSBOARD_TILT_ANGLE = -80.0f;  // degrees
+    static constexpr float CHESSBOARD_Y_OFFSET = -1.3f;
+    
+    // ===== CUBE CONSTANTS =====
+    static constexpr float CUBE_Y_POSITION = 0.5f;
+    static constexpr float CUBE_ROTATION_SPEED = 1.5f;
+    
+    // ===== CAMERA CONSTANTS =====
+    static constexpr float CAMERA_FOV = 45.0f;              // degrees
+    static constexpr float CAMERA_ASPECT_RATIO = 1.0f;
+    static constexpr float CAMERA_NEAR_PLANE = 1.0f;
+    static constexpr float CAMERA_FAR_PLANE = 10.0f;
+    static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
 
     std::shared_ptr<VertexArray> m_chessboardVAO;
     std::shared_ptr<VertexArray> m_unitCubeVAO;

@@ -42,7 +42,7 @@ unsigned Lab4Application::Init()
     // =============== CAMERA SETUP ===============
 
     m_camera = std::make_unique<PerspectiveCamera>(
-        PerspectiveCamera::Frustrum{45.0f, 1.0f, 1.0f, 1.0f, 10.0f},
+        PerspectiveCamera::Frustrum{CAMERA_FOV, CAMERA_ASPECT_RATIO, CAMERA_ASPECT_RATIO, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE},
         glm::vec3(0.0f, 0.0f, 5.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f)
@@ -118,28 +118,28 @@ void Lab4Application::InputHandleTileSelection(GLFWwindow* window)
     // Check arrow keys
     // RIGHT KEY
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedX < 7) {
+        if (!keyWasPressed && m_selectedX < MAX_GRID_INDEX) {
             m_selectedX++;
         }
         keyIsPressed = true;
     }
     // LEFT KEY
     else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedX > 0) {
+        if (!keyWasPressed && m_selectedX > MIN_GRID_INDEX) {
             m_selectedX--;
         }
         keyIsPressed = true;
     }
     // UP KEY
     else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedY < 7) {
+        if (!keyWasPressed && m_selectedY < MAX_GRID_INDEX) {
             m_selectedY++;
         }
         keyIsPressed = true;
     }
     // DOWN KEY
     else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedY > 0) {
+        if (!keyWasPressed && m_selectedY > MIN_GRID_INDEX) {
             m_selectedY--;
         }
         keyIsPressed = true;
@@ -151,7 +151,7 @@ void Lab4Application::InputHandleTileSelection(GLFWwindow* window)
 
 void Lab4Application::InputHandleCubeRotation(GLFWwindow* window)
 {
-    const float rotationSpeed = 1.5f;
+    const float rotationSpeed = CUBE_ROTATION_SPEED;
 
     // W = Rotate up
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -212,8 +212,8 @@ void Lab4Application::UpdateCubeRotation()
     m_unitCubeModelMatrix = glm::mat4(1.0f);
 
     m_unitCubeModelMatrix = glm::translate(
-        m_unitCubeModelMatrix,               // Matrix to transform
-        glm::vec3(0.0f, 0.5f, 0.0f));       // Position (X, Y, Z)
+        m_unitCubeModelMatrix,                          // Matrix to transform
+        glm::vec3(0.0f, CUBE_Y_POSITION, 0.0f));        // Position (X, Y, Z)
 
     m_unitCubeModelMatrix = glm::rotate(m_unitCubeModelMatrix,
                                         glm::radians(m_cubeRotationY),
@@ -270,8 +270,8 @@ void Lab4Application::InitializeChessboard()
     // ----------------------------------Geometry Setup---------------------------------------
 
     // Generate a 8x8 grid using Geometric tools
-    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<8, 8>();
-    auto indices = GeometricTools::UnitGridTopologyTriangles<8, 8>();
+    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<GRID_SIZE, GRID_SIZE>();
+    auto indices = GeometricTools::UnitGridTopologyTriangles<GRID_SIZE, GRID_SIZE>();
 
     // --------------------------------Model Matrix Setup-------------------------------------
 
@@ -280,19 +280,19 @@ void Lab4Application::InitializeChessboard()
 
     // 1. Scale, upscale by 2
     m_chessboardModelMatrix = glm::scale(
-        m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(3.0f, 3.0f, 1.0f));       // Scale factors (X, Y, Z)
+        m_chessboardModelMatrix,                                    // Matrix to transform
+        glm::vec3(CHESSBOARD_SCALE, CHESSBOARD_SCALE, 1.0f));       // Scale factors (X, Y, Z)
 
     // 2. Rotate, 60 degrees by x axis
     m_chessboardModelMatrix = glm::rotate(
-        m_chessboardModelMatrix,            // Matrix to transform
-        glm::radians(-80.0f),               // Angle (converts degrees to radians)
-        glm::vec3(1.0f, 0.0f, 0.0f));       // Which axis to rotate (X, Y, Z)
+        m_chessboardModelMatrix,                                    // Matrix to transform
+        glm::radians(CHESSBOARD_TILT_ANGLE),                        // Angle (converts degrees to radians)
+        glm::vec3(1.0f, 0.0f, 0.0f));                               // Which axis to rotate (X, Y, Z)
 
     // 3. Translate (move) - stays at origin
     m_chessboardModelMatrix = glm::translate(
-        m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(0.0f, -1.3f, 0.0f));       // Position (X, Y, Z)
+        m_chessboardModelMatrix,                                    // Matrix to transform
+        glm::vec3(0.0f, CHESSBOARD_Y_OFFSET, 0.0f));                // Position (X, Y, Z)
     
     // -----------------------------------Buffer Setup & Layout--------------------------------
 
