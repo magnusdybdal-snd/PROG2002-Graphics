@@ -1,5 +1,5 @@
-#ifndef __CHESSBOARD_FRAGMENT_H_
-#define __CHESSBOARD_FRAGMENT_H_
+#ifndef CHESSASSIGNMENT_FRAGMENT_H_
+#define CHESSASSIGNMENT_FRAGMENT_H_
 
 #include <string>
 

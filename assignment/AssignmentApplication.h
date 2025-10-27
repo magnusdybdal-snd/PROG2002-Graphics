@@ -61,7 +61,7 @@ private:
     void RenderChessboard();
     // void InitializeTextures();
     void InitializeChessboard();
-    // void InitializeShaders();
+    void InitializeShaders();
     // void InputHandleTileSelection(GLFWwindow* window);
 };
 #endif // AssignmentApplication_H_
