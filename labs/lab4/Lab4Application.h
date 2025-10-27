@@ -10,7 +10,6 @@
 #include "Shader.h"
 #include "RenderCommands.h"
 #include "TextureManager.h"
-#include "Camera.h"
 #include "PerspectiveCamera.h"
 
 #include <memory>
@@ -30,14 +29,14 @@ public:
 
 private:
 
+    static int constexpr GRID_SIZE = 8;
+
     std::shared_ptr<VertexArray> m_chessboardVAO;
     std::shared_ptr<VertexArray> m_unitCubeVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
     std::unique_ptr<Shader> m_unitCubeShaderProgram;
     std::unique_ptr<PerspectiveCamera> m_camera;
 
-    glm::mat4 m_projectionMatrix;
-    glm::mat4 m_viewMatrix;
     glm::mat4 m_chessboardModelMatrix;
     glm::mat4 m_unitCubeModelMatrix;
     glm::vec4 m_cubeBlendColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f); // Default no color
@@ -54,5 +53,12 @@ private:
     void RenderChessboard();
     void RenderUnitCube();
     void UpdateCubeRotation();
+    void InitializeTextures();
+    void InitializeChessboard();
+    void InitializeUnitCube();
+    void InitializeShaders();
+    void InputHandleCubeRotation(GLFWwindow* window);
+    void InputHandleTileSelection(GLFWwindow* window);
+    void InputHandleColorBlending(GLFWwindow* window);
 };
 #endif // LAB4APPLICATION_H_

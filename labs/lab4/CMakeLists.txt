@@ -18,6 +18,12 @@ add_custom_command(
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/cube_texture2.jpg
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/cube_texture2.jpg)
+
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/floor_texture.jpg
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/floor_texture.jpg)
 

@@ -8,9 +8,6 @@
 #include "shaders/unitCube_vertex.h"
 #include "shaders/unitCube_fragment.h"
 
-// Image data: 3 channels RGB, 24 bpp
-
-
 // Constructor: Call parent constructor with 800x800 square window
 Lab4Application::Lab4Application(const std::string& name, const std::string& version)
     : GLFWApplication(name, version, 800, 800),
@@ -33,20 +30,17 @@ unsigned Lab4Application::Init()
         return EXIT_FAILURE;
     }
 
+    // =============== OPENGL STATE SETUP ===============
+
     // Enable depth testing for rendering 3d objects in correct order
     glEnable(GL_DEPTH_TEST);
-
     // Enable blending
     glEnable(GL_BLEND);
     // Set the blending function: s*alpha + d(1-alpha)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    // =============== CAMERA SETUP ===============
 
-    // Creating texture manager and loading textures
-    auto textureManager = TextureManager::GetInstance();
-    textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
-    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "cube_texture.jpg", 1);
-
-    // Setting up the camera
     m_camera = std::make_unique<PerspectiveCamera>(
         PerspectiveCamera::Frustrum{45.0f, 1.0f, 1.0f, 1.0f, 10.0f},
         glm::vec3(0.0f, 0.0f, 5.0f),
@@ -54,83 +48,28 @@ unsigned Lab4Application::Init()
         glm::vec3(0.0f, 1.0f, 0.0f)
     );
 
-    // ModelMatrices for chessboard and unit cube
-    // Start with the id matrix
-    m_unitCubeModelMatrix = glm::mat4(1.0f);
-    m_chessboardModelMatrix = glm::mat4(1.0f);
+    // =============== TEXTURE LOADING ===============
 
-    // 1. Scale, upscale by 2
-    m_chessboardModelMatrix = glm::scale(
-        m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(3.0f, 3.0f, 1.0f));       // Scale factors (X, Y, Z)
+    InitializeTextures();
+    
+    // =============== SCENE SETUP ===============
+    
+    InitializeChessboard();
+    InitializeUnitCube();
+    
+    // =============== SHADER SETUP ===============
 
-    // 2. Rotate, 60 degrees by x axis
-    m_chessboardModelMatrix = glm::rotate(
-        m_chessboardModelMatrix,            // Matrix to transform
-        glm::radians(-80.0f),               // Angle (converts degrees to radians)
-        glm::vec3(1.0f, 0.0f, 0.0f));       // Which axis to rotate (X, Y, Z)
-
-    // 3. Translate (move) - stays at origin
-    m_chessboardModelMatrix = glm::translate(
-        m_chessboardModelMatrix,            // Matrix to transform
-        glm::vec3(0.0f, -1.3f, 0.0f));       // Position (X, Y, Z)
-
-    std::cout << "Model matrix created..." << std::endl;
-
-    std::cout << "Setting up chessboard..." << std::endl;
-
-    // Generate a 8x8 grid using Geometric tools
-    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<GRID_SIZE, GRID_SIZE>();
-    auto indices = GeometricTools::UnitGridTopologyTriangles<GRID_SIZE, GRID_SIZE>();
-
-    // Generate vertices and indices for the cube
-    auto UnitCubeVertices = GeometricTools::UnitCubeGeometry3D;
-    auto UnitCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
-
-    // Create vertex buffers using smart pointers
-    auto gridVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
-    auto UnitCubeVertexBuffer = std::make_shared<VertexBuffer>(UnitCubeVertices.data(), UnitCubeVertices.size() * sizeof(float));
-
-    // Creating the index buffers using smart pointers:
-    auto gridIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
-    auto UnitCubeIndexBuffer = std::make_shared<IndexBuffer>(UnitCubeIndices.data(), UnitCubeIndices.size());
-
-    // Define the buffer layouts
-    auto gridBufferLayout = BufferLayout({
-        { ShaderDataType::Float2, "position" },
-        { ShaderDataType::Float2, "tcoords" }
-    }
-    );
-    auto UnitCubeBufferLayout = BufferLayout(
-        {{ ShaderDataType::Float3, "cube_position" }}
-    );
-
-    // Set the layouts in the vertex buffer
-    gridVertexBuffer->SetLayout(gridBufferLayout);
-    UnitCubeVertexBuffer->SetLayout(UnitCubeBufferLayout);
-
-    // Create and configure vertex arrays
-    m_chessboardVAO = std::make_shared<VertexArray>();
-    m_chessboardVAO->AddVertexBuffer(gridVertexBuffer);
-    m_chessboardVAO->SetIndexBuffer(gridIndexBuffer);
-
-    m_unitCubeVAO = std::make_shared<VertexArray>();
-    m_unitCubeVAO->AddVertexBuffer(UnitCubeVertexBuffer);
-    m_unitCubeVAO->SetIndexBuffer(UnitCubeIndexBuffer);
-
-    // Create and compile shaders
-    m_chessboardShaderProgram = std::make_unique<Shader>(chessboardVertexShaderSrc, chessboardFragmentShaderSrc);
-    m_unitCubeShaderProgram = std::make_unique<Shader>(unitCubeVertexShaderSrc, unitCubeFragmentShaderSrc);
-
+    InitializeShaders();
+    
     return EXIT_SUCCESS;
 }
 
 unsigned Lab4Application::Run()
 {
     GLFWwindow* window = GetWindow();
-
+    
     std::cout << "Use arrow keys to move selector, ESC to exit" << std::endl;
-
+    
     // Main rendering loop
     while (!glfwWindowShouldClose(window)) 
     {
@@ -143,7 +82,7 @@ unsigned Lab4Application::Run()
         RenderCommands::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         RenderCommands::Clear();
 
-        // Render scene: chessboard first, then transparent cube
+        // Render the chessboard and cube: Opaque first then transp
         RenderChessboard();
         RenderUnitCube();
 
@@ -156,10 +95,22 @@ unsigned Lab4Application::Run()
 
 void Lab4Application::HandleInput()
 {
+
     GLFWwindow* window = GetWindow();
 
-    // ===== CHESSBOARD SELECTED TILE CONTROLS =====
+    // Input handling seperated into its own helper functions
+    InputHandleColorBlending(window);
+    InputHandleCubeRotation(window);
+    InputHandleTileSelection(window);
 
+    // ESC to exit program
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+}
+
+void Lab4Application::InputHandleTileSelection(GLFWwindow* window)
+{
     // Simple debouncing; track if key was pressed last frame
     static bool keyWasPressed = false;
     bool keyIsPressed = false;
@@ -167,7 +118,7 @@ void Lab4Application::HandleInput()
     // Check arrow keys
     // RIGHT KEY
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedX < MAX_GRID_INDEX) {
+        if (!keyWasPressed && m_selectedX < 7) {
             m_selectedX++;
         }
         keyIsPressed = true;
@@ -181,7 +132,7 @@ void Lab4Application::HandleInput()
     }
     // UP KEY
     else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        if (!keyWasPressed && m_selectedY < MAX_GRID_INDEX) {
+        if (!keyWasPressed && m_selectedY < 7) {
             m_selectedY++;
         }
         keyIsPressed = true;
@@ -196,9 +147,10 @@ void Lab4Application::HandleInput()
 
     // Update key state for next frame
     keyWasPressed = keyIsPressed;
-    
-    // ===== CUBE ROTATION CONTROLS =====
+}
 
+void Lab4Application::InputHandleCubeRotation(GLFWwindow* window)
+{
     const float rotationSpeed = 1.5f;
 
     // W = Rotate up
@@ -217,8 +169,10 @@ void Lab4Application::HandleInput()
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         m_cubeRotationY += rotationSpeed;
     }
+}
 
-    // ===== CUBE COLOR BLEND CONTROLS ====
+void Lab4Application::InputHandleColorBlending(GLFWwindow* window) 
+{
     static bool colorKeyWasPressed = false;
     bool colorKeyIsPressed = false;
 
@@ -251,11 +205,6 @@ void Lab4Application::HandleInput()
         colorKeyIsPressed = true;
     }
     colorKeyWasPressed = colorKeyIsPressed;
-
-    // ESC to exit program
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
 }
 
 void Lab4Application::UpdateCubeRotation()
@@ -278,14 +227,11 @@ void Lab4Application::UpdateCubeRotation()
 // Render the chessboard
 void Lab4Application::RenderChessboard()
 {
-    glEnable(GL_DEPTH_TEST);
-
-    // Bind the shader program and vao for the chessboard
     m_chessboardShaderProgram->Bind();
     m_chessboardVAO->Bind();
 
     // Pass uniforms to shader
-    m_chessboardShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
+    m_chessboardShaderProgram->UploadUniformMat4("u_viewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
 
@@ -296,19 +242,123 @@ void Lab4Application::RenderChessboard()
 // Render the cube
 void Lab4Application::RenderUnitCube()
 {
-    // Disable depth testing for transparent cube to prevent z-fighting
-    glDisable(GL_DEPTH_TEST);       //glDepthMask(GL_FALSE) If you have multiple overlapping transp objects!!!
-
-    // Bind the shader program and vao for the cube
     m_unitCubeShaderProgram->Bind();
     m_unitCubeVAO->Bind();
 
     // Pass uniforms to shader
     m_unitCubeShaderProgram->UploadUniformFloat4("u_cubeBlendColor", m_cubeBlendColor);
-    m_unitCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
+    m_unitCubeShaderProgram->UploadUniformMat4("u_viewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_unitCubeShaderProgram->UploadUniformMat4("u_unitCubeModelMatrix", m_unitCubeModelMatrix);
 
     // Draw the cube with texture
+    glDisable(GL_DEPTH_TEST);       //glDepthMask(GL_FALSE) If you have multiple overlapping transp objects!!!
     RenderCommands::SetSolidMode();
     RenderCommands::DrawIndex(m_unitCubeVAO, GL_TRIANGLES);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void Lab4Application::InitializeTextures()
+{
+    // Creating texture manager and loading textures
+    auto textureManager = TextureManager::GetInstance();
+    textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "floor_texture.jpg", 0);
+    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "cube_texture2.jpg", 1);
+}
+
+void Lab4Application::InitializeChessboard()
+{
+    // ----------------------------------Geometry Setup---------------------------------------
+
+    // Generate a 8x8 grid using Geometric tools
+    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<8, 8>();
+    auto indices = GeometricTools::UnitGridTopologyTriangles<8, 8>();
+
+    // --------------------------------Model Matrix Setup-------------------------------------
+
+    // Start with identity matrix
+    m_chessboardModelMatrix = glm::mat4(1.0f);
+
+    // 1. Scale, upscale by 2
+    m_chessboardModelMatrix = glm::scale(
+        m_chessboardModelMatrix,            // Matrix to transform
+        glm::vec3(3.0f, 3.0f, 1.0f));       // Scale factors (X, Y, Z)
+
+    // 2. Rotate, 60 degrees by x axis
+    m_chessboardModelMatrix = glm::rotate(
+        m_chessboardModelMatrix,            // Matrix to transform
+        glm::radians(-80.0f),               // Angle (converts degrees to radians)
+        glm::vec3(1.0f, 0.0f, 0.0f));       // Which axis to rotate (X, Y, Z)
+
+    // 3. Translate (move) - stays at origin
+    m_chessboardModelMatrix = glm::translate(
+        m_chessboardModelMatrix,            // Matrix to transform
+        glm::vec3(0.0f, -1.3f, 0.0f));       // Position (X, Y, Z)
+    
+    // -----------------------------------Buffer Setup & Layout--------------------------------
+
+    // Create vertex and index buffers using smart pointers
+    auto chessboardVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
+    auto chessboardIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
+
+    // Define the buffer layout
+    auto chessboardBufferLayout = BufferLayout({
+        { ShaderDataType::Float2, "position" },
+        { ShaderDataType::Float2, "tcoords" }
+    }
+    );
+    // Set the layout in the vertex buffer
+    chessboardVertexBuffer->SetLayout(chessboardBufferLayout);
+
+    // ---------------------------------------- VAO Setup -------------------------------------
+
+    // Create and configure vertex array
+    m_chessboardVAO = std::make_shared<VertexArray>();
+    m_chessboardVAO->AddVertexBuffer(chessboardVertexBuffer);
+    m_chessboardVAO->SetIndexBuffer(chessboardIndexBuffer);
+    m_chessboardVAO->Unbind();
+}
+
+void Lab4Application::InitializeUnitCube()
+{
+    // ----------------------------------Geometry Setup---------------------------------------
+
+    // Generate vertices and indices for the cube
+    auto UnitCubeVertices = GeometricTools::UnitCubeGeometry3D;
+    auto UnitCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
+
+    // --------------------------------Model Matrix Setup-------------------------------------
+
+    m_unitCubeModelMatrix = glm::mat4(1.0f);
+    
+    // -----------------------------------Buffer Setup & Layout--------------------------------
+
+    // Create vertex and index buffers using smart pointers
+    auto cubeVertexBuffer = std::make_shared<VertexBuffer>(UnitCubeVertices.data(), UnitCubeVertices.size() * sizeof(float));
+    auto cubeIndexBuffer = std::make_shared<IndexBuffer>(UnitCubeIndices.data(), UnitCubeIndices.size());
+
+    // Define the buffer layout
+    auto UnitCubeBufferLayout = BufferLayout(
+        {{ ShaderDataType::Float3, "cube_position" }}
+    );
+
+    // Set the layouts in the vertex buffer
+    cubeVertexBuffer->SetLayout(UnitCubeBufferLayout);
+
+    // ---------------------------------------- VAO Setup -------------------------------------
+
+    m_unitCubeVAO = std::make_shared<VertexArray>();
+    m_unitCubeVAO->AddVertexBuffer(cubeVertexBuffer);
+    m_unitCubeVAO->SetIndexBuffer(cubeIndexBuffer);
+    m_unitCubeVAO->Unbind();
+}
+
+void Lab4Application::InitializeShaders()
+{
+    // Create and compile shaders
+    m_chessboardShaderProgram = std::make_unique<Shader>(
+        chessboardVertexShaderSrc, chessboardFragmentShaderSrc
+    );
+    m_unitCubeShaderProgram = std::make_unique<Shader>(
+        unitCubeVertexShaderSrc, unitCubeFragmentShaderSrc
+    );
 }
