@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "chess_assignment_fragment.h"
-#include "chess_assignment_vertex.h"
+#include "shaders/chess_assignment_fragment.h"
+#include "shaders/chess_assignment_vertex.h"
 
 AssignmentApplication::AssignmentApplication(const std::string &name, const std::string &version)
     : GLFWApplication(name, version, 800, 600),
@@ -14,7 +14,6 @@ AssignmentApplication::AssignmentApplication(const std::string &name, const std:
 }
 
 AssignmentApplication::~AssignmentApplication()
-
 {
 
 }
@@ -25,8 +24,10 @@ unsigned AssignmentApplication::Init()
     if (GLFWApplication::Init() != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
-
+    std::cout << "beofre init chess";
     InitializeChessboard();
+    std::cout << "init chessboard yoho";
+    InitializeShaders();
 
     return EXIT_SUCCESS;
 }
@@ -44,10 +45,12 @@ unsigned AssignmentApplication::Run()
         // Process events
         glfwPollEvents();
         HandleInput();
-
+        
         // clear screen
         RenderCommands::SetClearColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
         RenderCommands::Clear();
+
+        RenderChessboard();
 
         glfwSwapBuffers(window);
     }
@@ -69,15 +72,25 @@ void AssignmentApplication::HandleInput()
 
 void AssignmentApplication::RenderChessboard()
 {
+    m_chessboardShaderProgram->Bind();
+    m_chessboardVAO->Bind();
 
+    // Pass uniforms to shader
+    m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
+    m_chessboardShaderProgram->UploadUniformInt("u_Gridsize",GRID_SIZE);
+
+    // Draw the chessboard
+    RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
 
 void AssignmentApplication::InitializeChessboard()
 {
+
+    std::cout << "inside initi function";
     // ----------------------------------Geometry Setup---------------------------------------
 
     // Generate a 8x8 grid using Geometric tools
-    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<GRID_SIZE, GRID_SIZE>();
+    auto vertices = GeometricTools::UnitGridGeometry2D<GRID_SIZE, GRID_SIZE>();
     auto indices = GeometricTools::UnitGridTopologyTriangles<GRID_SIZE, GRID_SIZE>();
 
     // --------------------------------Model Matrix Setup-------------------------------------
@@ -128,6 +141,6 @@ void AssignmentApplication::InitializeShaders()
 {
     // Create and compile shaders
     m_chessboardShaderProgram = std::make_unique<Shader>(
-        chessboardVertexShaderSrc, chessboardFragmentShaderSrc
+        chessboardVertexShaderSrc.c_str(), chessboardFragmentShaderSrc.c_str()
     );
 }

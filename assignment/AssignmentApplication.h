@@ -35,9 +35,9 @@ private:
     // static constexpr int MIN_GRID_INDEX = 0;
     
     // ===== CHESSBOARD CONSTANTS =====
-    static constexpr float CHESSBOARD_SCALE = 3.0f;
-    static constexpr float CHESSBOARD_TILT_ANGLE = -80.0f;  // degrees
-    static constexpr float CHESSBOARD_Y_OFFSET = -1.3f;
+    static constexpr float CHESSBOARD_SCALE = 1.0f;
+    static constexpr float CHESSBOARD_TILT_ANGLE = 80.0f;  // degrees
+    static constexpr float CHESSBOARD_Y_OFFSET = -0.0f;
     
     // ===== CAMERA CONSTANTS =====
     // static constexpr float CAMERA_FOV = 45.0f;              // degrees
