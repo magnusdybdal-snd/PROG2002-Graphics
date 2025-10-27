@@ -30,27 +30,28 @@ public:
 private:
 
     // ===== GRID CONSTANTS =====
-    // static constexpr int GRID_SIZE = 8;
+    static constexpr int GRID_SIZE = 8;
     // static constexpr int MAX_GRID_INDEX = GRID_SIZE - 1;
     // static constexpr int MIN_GRID_INDEX = 0;
     
     // ===== CHESSBOARD CONSTANTS =====
-    // static constexpr float CHESSBOARD_SCALE = 3.0f;
-    // static constexpr float CHESSBOARD_TILT_ANGLE = -80.0f;  // degrees
-    // static constexpr float CHESSBOARD_Y_OFFSET = -1.3f;
+    static constexpr float CHESSBOARD_SCALE = 3.0f;
+    static constexpr float CHESSBOARD_TILT_ANGLE = -80.0f;  // degrees
+    static constexpr float CHESSBOARD_Y_OFFSET = -1.3f;
     
     // ===== CAMERA CONSTANTS =====
-    // static constexpr float CAMERA_FOV = 45.0f;              // degrees
-    // static constexpr float CAMERA_ASPECT_RATIO = 1.0f;
-    // static constexpr float CAMERA_NEAR_PLANE = 1.0f;
-    // static constexpr float CAMERA_FAR_PLANE = 10.0f;
-    // static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
+    static constexpr float CAMERA_FOV = 45.0f;              // degrees
+    static constexpr float CAMERA_WIDTH = 800.0f;
+    static constexpr float CAMERA_HEIGHT = 600.0f;
+    static constexpr float CAMERA_NEAR_PLANE = 1.0f;
+    static constexpr float CAMERA_FAR_PLANE = 10.0f;
+    static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
 
-    // std::shared_ptr<VertexArray> m_chessboardVAO;
-    // std::unique_ptr<Shader> m_chessboardShaderProgram;
-    // std::unique_ptr<PerspectiveCamera> m_camera;
+    std::shared_ptr<VertexArray> m_chessboardVAO;
+    std::unique_ptr<Shader> m_chessboardShaderProgram;
+    std::unique_ptr<PerspectiveCamera> m_camera;
 
-    // glm::mat4 m_chessboardModelMatrix;
+    glm::mat4 m_chessboardModelMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;
@@ -58,10 +59,10 @@ private:
 
     // Private helper methods
     void HandleInput();
-    // void RenderChessboard();
+    void RenderChessboard();
     // void InitializeTextures();
-    // void InitializeChessboard();
-    // void InitializeShaders();
+    void InitializeChessboard();
+    void InitializeShaders();
     // void InputHandleTileSelection(GLFWwindow* window);
 };
 #endif // AssignmentApplication_H_
