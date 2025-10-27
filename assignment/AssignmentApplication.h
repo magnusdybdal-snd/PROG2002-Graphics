@@ -57,7 +57,7 @@ private:
     int m_selectedY = 0;
 
     // Private helper methods
-    // void HandleInput();
+    void HandleInput();
     // void RenderChessboard();
     // void InitializeTextures();
     // void InitializeChessboard();
