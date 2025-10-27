@@ -3,7 +3,7 @@
 int main(int argc, char* argv[])
 {
 
-    // Create the Lab2 applicatoin
+    // Create the Assignment application
     AssignmentApplication application("Assignment", "1.0");
 
     // Initialize
