@@ -107,6 +107,10 @@ void AssignmentApplication::RenderChessPieces()
         const auto& piece = m_chessPieces[i];
         glm::vec3 color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
         
+        if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
+            color = glm::vec3(0.0f,0.9f,0.0);
+        }
+
         // Draw each piece with its own model matrix
         m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
