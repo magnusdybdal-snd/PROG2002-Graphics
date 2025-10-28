@@ -70,6 +70,7 @@ void AssignmentApplication::HandleInput()
     // Get the window
     GLFWwindow* window = GetWindow();
 
+    InputHandleTileSelection(window);
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -82,9 +83,10 @@ void AssignmentApplication::RenderChessboard()
     m_chessboardVAO->Bind();
 
     // Pass uniforms to shader
-    m_chessboardShaderProgram->UploadUniformMat4("u_chessboardModelMatrix", m_chessboardModelMatrix);
-    m_chessboardShaderProgram->UploadUniformMat4("u_viewProjectionMatrix", m_camera->GetViewProjectionMatrix());
-    m_chessboardShaderProgram->UploadUniformInt("u_Gridsize",GRID_SIZE);
+    m_chessboardShaderProgram->UploadUniformMat4("u_ChessboardModelMatrix", m_chessboardModelMatrix);
+    m_chessboardShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
+    m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
+    m_chessboardShaderProgram->UploadUniformInt("u_GridSize",GRID_SIZE);
 
     // Draw the chessboard
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
@@ -148,4 +150,44 @@ void AssignmentApplication::InitializeShaders()
     m_chessboardShaderProgram = std::make_unique<Shader>(
         chessboardVertexShaderSrc.c_str(), chessboardFragmentShaderSrc.c_str()
     );
+}
+
+void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
+{
+    // Simple debouncing; track if key was pressed last frame
+    static bool keyWasPressed = false;
+    bool keyIsPressed = false;
+
+    // Check arrow keys
+    // RIGHT KEY
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedX < MAX_GRID_INDEX) {
+            m_selectedX++;
+        }
+        keyIsPressed = true;
+    }
+    // LEFT KEY
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedX > MIN_GRID_INDEX) {
+            m_selectedX--;
+        }
+        keyIsPressed = true;
+    }
+    // UP KEY
+    else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedY < MAX_GRID_INDEX) {
+            m_selectedY++;
+        }
+        keyIsPressed = true;
+    }
+    // DOWN KEY
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        if (!keyWasPressed && m_selectedY > MIN_GRID_INDEX) {
+            m_selectedY--;
+        }
+        keyIsPressed = true;
+    }
+
+    // Update key state for next frame
+    keyWasPressed = keyIsPressed;
 }

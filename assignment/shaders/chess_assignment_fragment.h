@@ -13,36 +13,46 @@ inline std::string chessboardFragmentShaderSrc = std::string(GLSL_FRAGMENT_VERSI
 
 
 in vec2 v_GridPos;                                              // INPUT:  Interpolated from vertex shader (0 to 1)
-uniform int u_Gridsize;                                         // INPUT:  Board grid size set in c++ code
-
+uniform int u_GridSize;                                         // INPUT:  Board grid size set in c++ code
+uniform ivec2 u_SelectedTile;                                   // INPUT:  From C++ code (which tile is selected)
 out vec4 fragColor;                                             // OUTPUT: Final pixel color
 
 void main()
 {
     vec4 chessboardColor;
 
-    // Convert continuous position (0, 1) to tile coordinates (0, 7)
-    // Clamp first to avoid edge cases where v_GridPos might be slightly outside [0,1]
-    vec2 clampedPos = clamp(v_GridPos, 0.0, 0.9999);
-    
-    int tileX = int(clampedPos.x * float(u_Gridsize));
-    int tileY = int(clampedPos.y * float(u_Gridsize));
+    // Convert continous position (0, 1) to tile coordinates (0, 7)
+    int tileX = int(floor(v_GridPos.x * float(u_GridSize)));
+    int tileY = int(floor(v_GridPos.y * float(u_GridSize)));
+
+    // Clamp to valid range for safety
+    tileX = clamp(tileX, 0, u_GridSize - 1);
+    tileY = clamp(tileY, 0, u_GridSize - 1);
+
 
     // Checkerboard pattern
     bool isBlack = ((tileX + tileY) % 2) == 0;
 
+    // Check if this is the selected tile
+    bool isSelected = (tileX == u_SelectedTile.x && tileY == u_SelectedTile.y);
+
     // Set color based on tile type
 
-    if (isBlack) {
-        // Black tile
-        chessboardColor = vec4(0.1, 0.1, 0.1, 1.0);
-    }
-    else {
-        // White color
-        chessboardColor = vec4(0.9, 0.9, 0.9, 1.0);
-    }
+     if (isSelected) {
+        // Selected tile: Green
+        fragColor = vec4(0.0, 0.9, 0.0, 1.0);
+     } else {
+        if (isBlack) {
+            // Black tile
+            chessboardColor = vec4(0.1, 0.1, 0.1, 1.0);
+        }
+        else {
+            // White color
+            chessboardColor = vec4(0.9, 0.9, 0.9, 1.0);
+        }
 
         fragColor = chessboardColor;    
+    }
 }
 )";
 

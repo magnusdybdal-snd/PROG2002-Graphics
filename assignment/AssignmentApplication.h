@@ -31,8 +31,8 @@ private:
 
     // ===== GRID CONSTANTS =====
     static constexpr int GRID_SIZE = 8;
-    // static constexpr int MAX_GRID_INDEX = GRID_SIZE - 1;
-    // static constexpr int MIN_GRID_INDEX = 0;
+    static constexpr int MAX_GRID_INDEX = GRID_SIZE - 1;
+    static constexpr int MIN_GRID_INDEX = 0;
     
     // ===== CHESSBOARD CONSTANTS =====
     static constexpr float CHESSBOARD_SCALE = 3.0f;
@@ -63,6 +63,6 @@ private:
     // void InitializeTextures();
     void InitializeChessboard();
     void InitializeShaders();
-    // void InputHandleTileSelection(GLFWwindow* window);
+    void InputHandleTileSelection(GLFWwindow* window);
 };
 #endif // AssignmentApplication_H_
