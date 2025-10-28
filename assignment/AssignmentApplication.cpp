@@ -106,20 +106,30 @@ void AssignmentApplication::RenderChessPieces()
 
     for (unsigned int i = 0; i < m_chessPieces.size(); i++){
         const auto& piece = m_chessPieces[i];
-        glm::vec3 color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
-       
-        // Green color if cube is in 'selected tile'. 
-        if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
-            color = glm::vec3(0.0f,0.9f,0.0);
+
+        glm::vec3 color;
+
+        // If piece is selected with enter - Yellow
+        if (i == m_selectedPieceIndex) {
+            color = glm::vec3(1.0f, 1.0f, 0.4f);
+        }
+
+        // If tile selector is hovering the piece - Green
+        else if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
+            color = glm::vec3(0.0f, 0.9f, 0.0f);
+        }
+
+        else {
+            color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
         }
 
         // Draw each piece with its own model matrix
         m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
-            m_camera->GetViewProjectionMatrix());
-            m_redCubeShaderProgram->UploadUniformInt("u_Selected", (int)piece.isSelected);
-            RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
+                                                  m_camera->GetViewProjectionMatrix());
+
+        RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
 }
 
@@ -302,7 +312,6 @@ void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
             int pieceIndex = FindPieceAt(m_selectedX, m_selectedY);
             if (pieceIndex != -1) {
                 m_selectedPieceIndex = pieceIndex;
-                m_chessPieces[pieceIndex].isSelected = true;
             }
         } 
         else {
@@ -329,7 +338,6 @@ void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
             }
             
             // Always deselect (whether move succeeded or was blocked/cancelled)
-            piece.isSelected = false;
             m_selectedPieceIndex = -1;
         }
     }

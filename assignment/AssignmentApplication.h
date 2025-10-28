@@ -85,7 +85,6 @@ private:
         glm::vec3 position;
         int gridX;
         int gridY;
-        bool isSelected = false;
     };
     int m_selectedPieceIndex = -1;
     std::vector<ChessPiece> m_chessPieces;
