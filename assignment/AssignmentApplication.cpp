@@ -7,19 +7,32 @@
 #include "shaders/red_cube_fragment.h"
 #include "shaders/red_cube_vertex.h"
 
+/**
+ * Constructor for AssignmentApplication
+ * Initializes the application with the given name and version, and sets up the window dimensions (800x600)
+ * Also initializes the selected tile position to (0,0)
+ */
 AssignmentApplication::AssignmentApplication(const std::string &name, const std::string &version)
     : GLFWApplication(name, version, 800, 600),
     m_selectedX(0),
     m_selectedY(0)
 {
-
 }
 
+/**
+ * Destructor for AssignmentApplication
+ * Resources are cleaned up by pointers and class destructors in VAO, VBO, EBO and Shaders
+ */
 AssignmentApplication::~AssignmentApplication()
 {
-
 }
 
+/**
+ * Initializes the application
+ * Sets up the camera with perspective projection, enables depth testing,
+ * and initializes the chessboard, chess pieces, and shaders
+ * @return EXIT_SUCCESS if initialization succeeds, EXIT_FAILURE otherwise
+ */
 unsigned AssignmentApplication::Init()
 {
     // Call parent Init first to setup GLFW, window, OpenGL context)
@@ -44,6 +57,11 @@ unsigned AssignmentApplication::Init()
     return EXIT_SUCCESS;
 }
 
+/**
+ * Main application loop
+ * Continuously renders the scene, processes input, and swaps buffers until the window is closed
+ * @return EXIT_SUCCESS when the application exits normally
+ */
 unsigned AssignmentApplication::Run()
 {
     // Get the window
@@ -71,6 +89,10 @@ unsigned AssignmentApplication::Run()
     return EXIT_SUCCESS;
 }
 
+/**
+ * Handles all user input for the application
+ * Processes tile selection with arrow keys, piece selection/movement with Enter, and exit with Q
+ */
 void AssignmentApplication::HandleInput()
 {
     // Get the window
@@ -84,6 +106,11 @@ void AssignmentApplication::HandleInput()
     }
 }
 
+/**
+ * Renders the chessboard
+ * Binds the chessboard shader and VAO, uploads necessary uniforms (model matrix, view-projection matrix,
+ * selected tile, and grid size), and issues the draw call
+ */
 void AssignmentApplication::RenderChessboard()
 {
     m_chessboardShaderProgram->Bind();
@@ -99,6 +126,11 @@ void AssignmentApplication::RenderChessboard()
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
 
+/**
+ * Renders all chess pieces
+ * Iterates through all pieces, determines their color based on selection state and position,
+ * uploads uniforms, and draws each piece with its own model matrix
+ */
 void AssignmentApplication::RenderChessPieces()
 {
     m_redCubeShaderProgram->Bind();
@@ -133,6 +165,11 @@ void AssignmentApplication::RenderChessPieces()
     }
 }
 
+/**
+ * Initializes the chess pieces
+ * Creates the cube geometry and buffers, sets up the VAO, and places all 32 pieces
+ * in their starting positions (rows 0-1 for red team, rows 6-7 for blue team)
+ */
 void AssignmentApplication::InitializeChessPieces()
 {
     // ----------------------------------Geometry Setup---------------------------------------
@@ -179,6 +216,13 @@ void AssignmentApplication::InitializeChessPieces()
     m_chessPiecesVAO->Unbind();
 }
 
+/**
+ * Places a chess piece at the specified grid coordinates
+ * Creates a ChessPiece with the given position, calculates its world position,
+ * builds its model matrix, and adds it to the pieces vector
+ * @param gridX The X coordinate on the grid (0-7)
+ * @param gridY The Y coordinate on the grid (0-7)
+ */
 void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
 {
     ChessPiece piece;
@@ -194,6 +238,11 @@ void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
     m_chessPieces.push_back(piece);
 }
 
+/**
+ * Initializes the chessboard
+ * Generates an 8x8 grid, creates the model matrix with scaling/rotation/translation,
+ * sets up vertex and index buffers, and configures the VAO
+ */
 void AssignmentApplication::InitializeChessboard()
 {
     // ----------------------------------Geometry Setup---------------------------------------
@@ -246,6 +295,10 @@ void AssignmentApplication::InitializeChessboard()
     m_chessboardVAO->Unbind();
 }
 
+/**
+ * Initializes the shader programs
+ * Compiles and links the chessboard and chess piece shaders from source
+ */
 void AssignmentApplication::InitializeShaders()
 {   // TODO move to GLFWApplication
     // Create and compile shaders
@@ -257,6 +310,12 @@ void AssignmentApplication::InitializeShaders()
     );
 }
 
+/**
+ * Handles tile selection input using arrow keys
+ * Uses debouncing to prevent multiple triggers from a single key press
+ * Updates m_selectedX and m_selectedY based on arrow key input
+ * @param window The GLFW window to poll for input
+ */
 void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
 {
     // Simple debouncing; track if key was pressed last frame
@@ -297,6 +356,14 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
     keyWasPressed = keyIsPressed;
 }  
 
+/**
+ * Handles piece selection and movement using the Enter key
+ * First Enter press selects a piece at the current tile (if one exists)
+ * Second Enter press attempts to move the selected piece to the current tile
+ * Movement is blocked if the destination tile is occupied
+ * Uses debouncing to prevent multiple triggers from a single key press
+ * @param window The GLFW window to poll for input
+ */
 void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
 {
     static bool enterWasPressed = false;
@@ -345,6 +412,12 @@ void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
     enterWasPressed = enterPressed;
 }
 
+/**
+ * Checks if a chess piece is at the given grid position and returns its index
+ * @param gridX The X coordinate on the grid (0-7)
+ * @param gridY The Y coordinate on the grid (0-7)
+ * @return The index of the piece at the given position, or -1 if no piece is found
+ */
 int AssignmentApplication::FindPieceAt(int gridX, int gridY) const 
 {
     for (size_t i = 0; i < m_chessPieces.size(); ++i) {
@@ -356,6 +429,14 @@ int AssignmentApplication::FindPieceAt(int gridX, int gridY) const
     return -1;
 }
 
+/**
+ * Converts grid coordinates to world space position
+ * Takes grid coordinates (0-7), normalizes them to unit grid space (-0.5 to 0.5),
+ * applies the chessboard transformation matrix, and offsets the piece above the board
+ * @param gridX The X coordinate on the grid (0-7)
+ * @param gridY The Y coordinate on the grid (0-7)
+ * @return The world space position (vec3) where the piece should be placed
+ */
 glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
     // Convert grid coordinates (0-7) to unit grid space (-0.5 to 0.5)
     float normalizedX = (gridX / float(GRID_SIZE)) - 0.5f + (0.5f / GRID_SIZE);
