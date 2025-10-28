@@ -32,7 +32,8 @@ unsigned AssignmentApplication::Init()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f)
     );
-
+    
+    InitializeRedCube();
     InitializeChessboard();
     InitializeShaders();
 
@@ -103,6 +104,40 @@ void AssignmentApplication::RenderRedCube()
 
     // Draw the cube with texture
     RenderCommands::DrawIndex(m_redCubeVAO, GL_TRIANGLES);
+}
+
+void AssignmentApplication::InitializeRedCube()
+{
+    // ----------------------------------Geometry Setup---------------------------------------
+
+    // Generate vertices and indices for the cube
+    auto redCubeVertices = GeometricTools::UnitCubeGeometry3D;
+    auto redCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
+
+    // --------------------------------Model Matrix Setup-------------------------------------
+
+    m_cubeModelMatrix = glm::mat4(1.0f);
+    
+    // -----------------------------------Buffer Setup & Layout--------------------------------
+
+    // Create vertex and index buffers using smart pointers
+    auto cubeVertexBuffer = std::make_shared<VertexBuffer>(redCubeVertices.data(), redCubeVertices.size() * sizeof(float));
+    auto cubeIndexBuffer = std::make_shared<IndexBuffer>(redCubeIndices.data(), redCubeIndices.size());
+
+    // Define the buffer layout
+    auto redCubeBufferLayout = BufferLayout(
+        {{ ShaderDataType::Float3, "cube_position" }}
+    );
+
+    // Set the layouts in the vertex buffer
+    cubeVertexBuffer->SetLayout(redCubeBufferLayout);
+
+    // ---------------------------------------- VAO Setup -------------------------------------
+
+    m_redCubeVAO = std::make_shared<VertexArray>();
+    m_redCubeVAO->AddVertexBuffer(cubeVertexBuffer);
+    m_redCubeVAO->SetIndexBuffer(cubeIndexBuffer);
+    m_redCubeVAO->Unbind();
 }
 
 void AssignmentApplication::InitializeChessboard()

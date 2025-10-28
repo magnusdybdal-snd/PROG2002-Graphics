@@ -64,6 +64,7 @@ private:
     void HandleInput();
     void RenderChessboard();
     void RenderRedCube();
+    void InitializeRedCube();
     // void InitializeTextures();
     void InitializeChessboard();
     void InitializeShaders();
