@@ -36,8 +36,8 @@ private:
     
     // ===== CHESSBOARD CONSTANTS =====
     static constexpr float CHESSBOARD_SCALE = 3.0f;
-    static constexpr float CHESSBOARD_TILT_ANGLE = -80.0f;  // degrees
-    static constexpr float CHESSBOARD_Y_OFFSET = -1.3f;
+    static constexpr float CHESSBOARD_TILT_ANGLE = 0.0f;  // degrees
+    static constexpr float CHESSBOARD_Y_OFFSET = 0.0f;
     
     // ===== CAMERA CONSTANTS =====
     static constexpr float CAMERA_FOV = 45.0f;              // degrees
@@ -48,10 +48,14 @@ private:
     static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
 
     std::shared_ptr<VertexArray> m_chessboardVAO;
+    std::shared_ptr<VertexArray> m_chessPiecesVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
+    std::unique_ptr<Shader> m_redCubeShaderProgram;
     std::unique_ptr<PerspectiveCamera> m_camera;
 
+
     glm::mat4 m_chessboardModelMatrix;
+    glm::mat4 m_cubeModelMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;
@@ -60,9 +64,23 @@ private:
     // Private helper methods
     void HandleInput();
     void RenderChessboard();
+
+    void RenderChessPieces();
+    void InitializeChessPieces();
+    void PlaceChessPiece(int gridX, int gridY);
+
     // void InitializeTextures();
     void InitializeChessboard();
     void InitializeShaders();
     void InputHandleTileSelection(GLFWwindow* window);
+    glm::vec3 GetTileWorldPosition(int gridX, int gridY);
+
+    struct ChessPiece {
+        glm::mat4 modelMatrix;
+        glm::vec3 position;
+        int gridX;
+        int gridY;
+    };
+    std::vector<ChessPiece> m_chessPieces;
 };
 #endif // AssignmentApplication_H_

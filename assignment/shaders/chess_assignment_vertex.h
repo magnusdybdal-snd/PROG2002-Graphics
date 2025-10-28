@@ -4,12 +4,12 @@
 #include <string>
 
 #ifdef __APPLE__   // macOS: 4.1 core
-    constexpr const char* GLSL_VERSION = "#version 410 core\n";
+    constexpr const char* GLSL_CHESS_VERTEX_VERSION = "#version 410 core\n";
 #else
-    constexpr const char* GLSL_VERSION = "#version 430 core\n";
+    constexpr const char* GLSL_CHESS_VERTEX_VERSION = "#version 430 core\n";
 #endif
 
-inline std::string chessboardVertexShaderSrc = std::string(GLSL_VERSION) + R"(
+inline std::string chessboardVertexShaderSrc = std::string(GLSL_CHESS_VERTEX_VERSION) + R"(
 
 layout(location = 0) in vec2 a_Position;    // INPUT: 2D position from VBO
 

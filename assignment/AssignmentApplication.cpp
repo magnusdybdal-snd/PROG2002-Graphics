@@ -4,6 +4,8 @@
 
 #include "shaders/chess_assignment_fragment.h"
 #include "shaders/chess_assignment_vertex.h"
+#include "shaders/red_cube_fragment.h"
+#include "shaders/red_cube_vertex.h"
 
 AssignmentApplication::AssignmentApplication(const std::string &name, const std::string &version)
     : GLFWApplication(name, version, 800, 600),
@@ -28,12 +30,15 @@ unsigned AssignmentApplication::Init()
     // =============== CAMERA SETUP ===============
     m_camera = std::make_unique<PerspectiveCamera>(
         PerspectiveCamera::Frustrum{CAMERA_FOV, CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE},
-        glm::vec3(0.0f, 0.0f, 5.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f)
+        glm::vec3(2.5f, -2.5f, 2.0f), // camera position.
+        glm::vec3(0.0f, 0.0f, 0.0f), // look at vector.
+        glm::vec3(0.0f, 0.0f, 1.0f)  // up-direction.
     );
+    
+    glEnable(GL_DEPTH_TEST);
 
     InitializeChessboard();
+    InitializeChessPieces();
     InitializeShaders();
 
     return EXIT_SUCCESS;
@@ -57,6 +62,7 @@ unsigned AssignmentApplication::Run()
         glfwPollEvents();
         HandleInput();
         RenderChessboard();
+        RenderChessPieces();
 
         glfwSwapBuffers(window);
     }
@@ -90,6 +96,85 @@ void AssignmentApplication::RenderChessboard()
 
     // Draw the chessboard
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
+}
+
+void AssignmentApplication::RenderChessPieces()
+{
+    m_redCubeShaderProgram->Bind();
+    m_chessPiecesVAO->Bind();
+
+    for (unsigned int i = 0; i < m_chessPieces.size(); i++){
+        const auto& piece = m_chessPieces[i];
+        glm::vec3 color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
+        
+        // Draw each piece with its own model matrix
+        m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
+        m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
+        m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
+            m_camera->GetViewProjectionMatrix());
+            RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
+    }
+}
+
+void AssignmentApplication::InitializeChessPieces()
+{
+    // ----------------------------------Geometry Setup---------------------------------------
+
+    // Generate vertices and indices for the cube
+    auto redCubeVertices = GeometricTools::UnitCubeGeometry3D;
+    auto redCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
+
+    // --------------------------------Model Matrix Setup-------------------------------------
+
+    m_cubeModelMatrix = glm::mat4(1.0f);
+    for (int i = 0; i < GRID_SIZE; i++){
+        for (int j = 0; j < 2; j++){
+            PlaceChessPiece(i,j);
+        }
+    }
+    for (int i = 0; i < GRID_SIZE; i++){ // x
+        for (int j = 6; j < GRID_SIZE; j++){ // y
+            PlaceChessPiece(i,j);
+        }
+    }
+    
+    // -----------------------------------Buffer Setup & Layout--------------------------------
+
+    // Create vertex and index buffers using smart pointers
+    auto cubeVertexBuffer = std::make_shared<VertexBuffer>(redCubeVertices.data(), redCubeVertices.size() * sizeof(float));
+    auto cubeIndexBuffer = std::make_shared<IndexBuffer>(redCubeIndices.data(), redCubeIndices.size());
+
+    // Define the buffer layout
+    auto redCubeBufferLayout = BufferLayout(
+        {{ ShaderDataType::Float3, "cube_position" }}
+    );
+
+    // Set the layouts in the vertex buffer
+    cubeVertexBuffer->SetLayout(redCubeBufferLayout);
+
+    // ---------------------------------------- VAO Setup -------------------------------------
+
+    m_chessPiecesVAO = std::make_shared<VertexArray>();
+    m_chessPiecesVAO->AddVertexBuffer(cubeVertexBuffer);
+    m_chessPiecesVAO->SetIndexBuffer(cubeIndexBuffer);
+
+
+    m_chessPiecesVAO->Unbind();
+}
+
+void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
+{
+    ChessPiece piece;
+    piece.gridX = gridX;
+    piece.gridY = gridY;
+    piece.position = GetTileWorldPosition(gridX, gridY);
+    
+    // Create model matrix: scale the piece to reasonable size
+    piece.modelMatrix = glm::mat4(1.0f);
+    piece.modelMatrix = glm::translate(piece.modelMatrix, piece.position);
+    piece.modelMatrix = glm::scale(piece.modelMatrix, glm::vec3(0.2f)); // Adjust size
+    
+    m_chessPieces.push_back(piece);
 }
 
 void AssignmentApplication::InitializeChessboard()
@@ -145,10 +230,13 @@ void AssignmentApplication::InitializeChessboard()
 }
 
 void AssignmentApplication::InitializeShaders()
-{
+{   // TODO move to GLFWApplication
     // Create and compile shaders
     m_chessboardShaderProgram = std::make_unique<Shader>(
         chessboardVertexShaderSrc.c_str(), chessboardFragmentShaderSrc.c_str()
+    );
+    m_redCubeShaderProgram = std::make_unique<Shader>(
+        redCubeVertexShaderSrc.c_str(), redCubeFragmentShaderSrc.c_str()
     );
 }
 
@@ -190,4 +278,19 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
 
     // Update key state for next frame
     keyWasPressed = keyIsPressed;
+}  
+
+glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
+    // Convert grid coordinates (0-7) to unit grid space (-0.5 to 0.5)
+    float normalizedX = (gridX / float(GRID_SIZE)) - 0.5f + (0.5f / GRID_SIZE);
+    float normalizedY = (gridY / float(GRID_SIZE)) - 0.5f + (0.5f / GRID_SIZE);
+    
+    // Create position in grid space (z=0 since chessboard is 2D)
+    glm::vec4 gridPosition = glm::vec4(normalizedX, normalizedY, 0.0f, 1.0f);
+    
+    // Apply chessboard transformation to get world position
+    glm::vec4 worldPosition = m_chessboardModelMatrix * gridPosition;
+    
+    // Offset the piece above the board (adjust height as needed)
+    return glm::vec3(worldPosition.x, worldPosition.y, worldPosition.z + 0.12f);
 }
