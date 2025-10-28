@@ -92,6 +92,19 @@ void AssignmentApplication::RenderChessboard()
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
 
+void AssignmentApplication::RenderRedCube()
+{
+    m_redCubeShaderProgram->Bind();
+    m_redCubeVAO->Bind();
+
+    // Pass uniforms to shader
+    m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
+    m_redCubeShaderProgram->UploadUniformMat4("u_UnitCubeModelMatrix", m_cubeModelMatrix);
+
+    // Draw the cube with texture
+    RenderCommands::DrawIndex(m_redCubeVAO, GL_TRIANGLES);
+}
+
 void AssignmentApplication::InitializeChessboard()
 {
     // ----------------------------------Geometry Setup---------------------------------------

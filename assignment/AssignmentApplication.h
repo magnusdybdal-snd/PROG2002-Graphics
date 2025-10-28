@@ -48,10 +48,13 @@ private:
     static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
 
     std::shared_ptr<VertexArray> m_chessboardVAO;
+    std::shared_ptr<VertexArray> m_redCubeVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
+    std::unique_ptr<Shader> m_redCubeShaderProgram;
     std::unique_ptr<PerspectiveCamera> m_camera;
 
     glm::mat4 m_chessboardModelMatrix;
+    glm::mat4 m_cubeModelMatrix;
 
     // Tile selector state (0-7)
     int m_selectedX = 0;
@@ -60,6 +63,7 @@ private:
     // Private helper methods
     void HandleInput();
     void RenderChessboard();
+    void RenderRedCube();
     // void InitializeTextures();
     void InitializeChessboard();
     void InitializeShaders();
