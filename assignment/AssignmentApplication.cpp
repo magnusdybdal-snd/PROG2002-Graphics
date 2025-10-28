@@ -4,6 +4,8 @@
 
 #include "shaders/chess_assignment_fragment.h"
 #include "shaders/chess_assignment_vertex.h"
+#include "shaders/red_cube_fragment.h"
+#include "shaders/red_cube_vertex.h"
 
 AssignmentApplication::AssignmentApplication(const std::string &name, const std::string &version)
     : GLFWApplication(name, version, 800, 600),
@@ -58,6 +60,7 @@ unsigned AssignmentApplication::Run()
         glfwPollEvents();
         HandleInput();
         RenderChessboard();
+        RenderRedCube();
 
         glfwSwapBuffers(window);
     }
@@ -100,7 +103,7 @@ void AssignmentApplication::RenderRedCube()
 
     // Pass uniforms to shader
     m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
-    m_redCubeShaderProgram->UploadUniformMat4("u_UnitCubeModelMatrix", m_cubeModelMatrix);
+    m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", m_cubeModelMatrix);
 
     // Draw the cube with texture
     RenderCommands::DrawIndex(m_redCubeVAO, GL_TRIANGLES);
@@ -193,10 +196,13 @@ void AssignmentApplication::InitializeChessboard()
 }
 
 void AssignmentApplication::InitializeShaders()
-{
+{   // TODO move to GLFWApplication
     // Create and compile shaders
     m_chessboardShaderProgram = std::make_unique<Shader>(
         chessboardVertexShaderSrc.c_str(), chessboardFragmentShaderSrc.c_str()
+    );
+    m_redCubeShaderProgram = std::make_unique<Shader>(
+        redCubeVertexShaderSrc.c_str(), redCubeFragmentShaderSrc.c_str()
     );
 }
 

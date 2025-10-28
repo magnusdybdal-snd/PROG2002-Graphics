@@ -4,12 +4,12 @@
 #include <string>
 
 #ifdef __APPLE__   // macOS: 4.1 core
-    constexpr const char* GLSL_FRAGMENT_VERSION = "#version 410 core\n";
+    constexpr const char* GLSL_CHESS_FRAGMENT_VERSION = "#version 410 core\n";
 #else
-    constexpr const char* GLSL_FRAGMENT_VERSION = "#version 430 core\n";
+    constexpr const char* GLSL_CHESS_FRAGMENT_VERSION = "#version 430 core\n";
 #endif
 
-inline std::string chessboardFragmentShaderSrc = std::string(GLSL_FRAGMENT_VERSION) + R"(
+inline std::string chessboardFragmentShaderSrc = std::string(GLSL_CHESS_FRAGMENT_VERSION) + R"(
 
 
 in vec2 v_GridPos;                                              // INPUT:  Interpolated from vertex shader (0 to 1)
