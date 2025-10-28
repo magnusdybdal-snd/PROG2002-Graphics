@@ -106,7 +106,8 @@ void AssignmentApplication::RenderChessPieces()
     for (unsigned int i = 0; i < m_chessPieces.size(); i++){
         const auto& piece = m_chessPieces[i];
         glm::vec3 color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
-        
+       
+        // Green color if cube is in 'selected tile'. 
         if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
             color = glm::vec3(0.0f,0.9f,0.0);
         }
