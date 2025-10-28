@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GLFWAPPLICATION_H_
+#define GLFWAPPLICATION_H_
+
 
 #include <string>
 #include <glad/glad.h>
@@ -36,6 +38,7 @@ class GLFWApplication
     std::string m_windowName;
     GLFWwindow* m_window = nullptr;
 
+    #ifndef __APPLE__
     // Error callbacks
     static void GLFWErrorCallback(int code, const char* description);
     static void GLAPIENTRY MessageCallback(GLenum source,
@@ -45,4 +48,6 @@ class GLFWApplication
                                 GLsizei length,
                                 const GLchar* message,
                                 const void* userParam);
+    #endif // __APPLE__
 };
+#endif // GLFWAPPLICATION_H_
