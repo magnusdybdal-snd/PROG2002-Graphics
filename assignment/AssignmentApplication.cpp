@@ -30,9 +30,9 @@ unsigned AssignmentApplication::Init()
     // =============== CAMERA SETUP ===============
     m_camera = std::make_unique<PerspectiveCamera>(
         PerspectiveCamera::Frustrum{CAMERA_FOV, CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE},
-        glm::vec3(-5.0f, -5.0f, -4.0f), // camera position.
+        glm::vec3(2.5f, -2.5f, 2.0f), // camera position.
         glm::vec3(0.0f, 0.0f, 0.0f), // look at vector.
-        glm::vec3(0.0f, 1.0f, 20.0f)  // up-direction.
+        glm::vec3(0.0f, 0.0f, 1.0f)  // up-direction.
     );
     
     glEnable(GL_DEPTH_TEST);
