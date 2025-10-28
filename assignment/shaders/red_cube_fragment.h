@@ -13,12 +13,16 @@ inline std::string redCubeFragmentShaderSrc = std::string(GLSL_RED_CUBE_FRAGMENT
 
 in vec3 vs_Position;            // INPUT: Position from vertex shader
 uniform vec3 u_Color;
+uniform int u_Selected;
 out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
-
-    fragColor = vec4(u_Color, 1.0);
+   if(u_Selected == 1) { 
+        fragColor = vec4(1.0, 1.0, 0.4, 1.0);
+    } else {
+        fragColor = vec4(u_Color, 1.0);
+   }
 }
 )";
 

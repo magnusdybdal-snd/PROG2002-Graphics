@@ -77,6 +77,7 @@ void AssignmentApplication::HandleInput()
     GLFWwindow* window = GetWindow();
 
     InputHandleTileSelection(window);
+    InputHandlePieceSelection(window);
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -117,6 +118,7 @@ void AssignmentApplication::RenderChessPieces()
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
             m_camera->GetViewProjectionMatrix());
+            m_redCubeShaderProgram->UploadUniformInt("u_Selected", (int)piece.isSelected);
             RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
 }
@@ -284,6 +286,72 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
     // Update key state for next frame
     keyWasPressed = keyIsPressed;
 }  
+
+void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
+{
+    bool enterDown = (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS);
+
+    if (enterDown && !m_isPieceSelected) {  // edge trigger
+        if (m_selectedPieceIndex < 0) {
+            // select phase
+            int found = -1;
+            for (int i = 0; i < (int)m_chessPieces.size(); ++i) {
+                auto& p = m_chessPieces[i];
+                if (p.gridX == m_selectedX && p.gridY == m_selectedY) {
+                    found = i; break;
+                }
+            }
+            for (auto& p : m_chessPieces) p.isSelected = false;
+            m_selectedPieceIndex = found;
+            if (m_selectedPieceIndex >= 0)
+                m_chessPieces[m_selectedPieceIndex].isSelected = true;
+
+        } else {
+            // move phase
+            auto& p = m_chessPieces[m_selectedPieceIndex];
+
+            // Block if target tile is occupied by some other piece
+            int blocker = FindPieceAt(m_selectedX, m_selectedY, /*ignoreIndex=*/m_selectedPieceIndex);
+            if (blocker >= 0) {
+                // Destination occupied — do nothing (or implement capture rules here)
+                // std::cout << "Blocked by piece " << blocker << "\n";
+            } else {
+                int dx = m_selectedX - p.gridX;
+                int dy = m_selectedY - p.gridY;
+
+                if (dx != 0 || dy != 0) {
+                    glm::vec3 delta(float(dx) / float(GRID_SIZE),
+                                    float(dy) / float(GRID_SIZE),
+                                    0.0f);
+                    // If your piece model space matches board space scaled by CHESSBOARD_SCALE, keep the next line.
+                    delta *= glm::vec3(CHESSBOARD_SCALE);
+
+                    glm::mat4 T = glm::translate(glm::mat4(1.0f), delta);
+                    p.modelMatrix = T * p.modelMatrix;
+                    p.gridX = m_selectedX;
+                    p.gridY = m_selectedY;
+                }
+            }
+
+            // Deselect either way
+            p.isSelected = false;
+            m_selectedPieceIndex = -1;
+        }
+    }
+
+    // debounce (this variable name means "was Enter down last frame", effectively)
+    m_isPieceSelected = enterDown;
+}
+// Add this helper in AssignmentApplication (private):
+int AssignmentApplication::FindPieceAt(int gx, int gy, int ignoreIndex) const
+{
+    for (int i = 0; i < (int)m_chessPieces.size(); ++i) {
+        if (i == ignoreIndex) continue;
+        if (m_chessPieces[i].gridX == gx && m_chessPieces[i].gridY == gy)
+            return i;
+    }
+    return -1;
+}
 
 glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
     // Convert grid coordinates (0-7) to unit grid space (-0.5 to 0.5)

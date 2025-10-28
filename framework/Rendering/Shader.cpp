@@ -67,9 +67,14 @@ void Shader::UploadUniformMat4(const std::string &name, const glm::mat4 &matrix)
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::UploadUniformInt(const std::string &name, int value)
+void Shader::UploadUniformInt(const std::string &name, const int &value)
 {
     glUniform1i(GetUniformLocation(name), value);
+}
+
+void Shader::UploadUniformBool(const std::string &name, const bool &value)
+{
+    glUniform1i(GetUniformLocation(name), (int)value);
 }
 
 GLint Shader::GetUniformLocation(const std::string &name)

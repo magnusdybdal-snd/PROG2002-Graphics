@@ -73,14 +73,20 @@ private:
     void InitializeChessboard();
     void InitializeShaders();
     void InputHandleTileSelection(GLFWwindow* window);
+    void InputHandlePieceSelection(GLFWwindow* window);
     glm::vec3 GetTileWorldPosition(int gridX, int gridY);
+    int FindPieceAt(int gx, int gy, int ignoreIndex) const;
 
     struct ChessPiece {
         glm::mat4 modelMatrix;
         glm::vec3 position;
         int gridX;
         int gridY;
+        bool isSelected = false;
     };
+
+    bool m_isPieceSelected = false;
+    int m_selectedPieceIndex = -1;
     std::vector<ChessPiece> m_chessPieces;
 };
 #endif // AssignmentApplication_H_
