@@ -100,13 +100,17 @@ void AssignmentApplication::RenderChessPieces()
 {
     m_redCubeShaderProgram->Bind();
     m_chessPiecesVAO->Bind();
-    
-    // Draw each piece with its own model matrix
-    for (const auto& piece : m_chessPieces) {
+
+    for (unsigned int i = 0; i < m_chessPieces.size(); i++){
+        const auto& piece = m_chessPieces[i];
+        glm::vec3 color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
+        
+        // Draw each piece with its own model matrix
+        m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
-                                                   m_camera->GetViewProjectionMatrix());
-        RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
+            m_camera->GetViewProjectionMatrix());
+            RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
 }
 
