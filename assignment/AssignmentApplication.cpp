@@ -35,8 +35,8 @@ unsigned AssignmentApplication::Init()
         glm::vec3(0.0f, 1.0f, 0.0f)
     );
     
-    InitializeRedCube();
     InitializeChessboard();
+    InitializeChessPieces();
     InitializeShaders();
 
     return EXIT_SUCCESS;
@@ -60,7 +60,7 @@ unsigned AssignmentApplication::Run()
         glfwPollEvents();
         HandleInput();
         RenderChessboard();
-        RenderRedCube();
+        RenderChessPieces();
 
         glfwSwapBuffers(window);
     }
@@ -96,20 +96,21 @@ void AssignmentApplication::RenderChessboard()
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
 
-void AssignmentApplication::RenderRedCube()
+void AssignmentApplication::RenderChessPieces()
 {
     m_redCubeShaderProgram->Bind();
-    m_redCubeVAO->Bind();
-
-    // Pass uniforms to shader
-    m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
-    m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", m_cubeModelMatrix);
-
-    // Draw the cube with texture
-    RenderCommands::DrawIndex(m_redCubeVAO, GL_TRIANGLES);
+    m_chessPiecesVAO->Bind();
+    
+    // Draw each piece with its own model matrix
+    for (const auto& piece : m_chessPieces) {
+        m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
+        m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
+                                                   m_camera->GetViewProjectionMatrix());
+        RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
+    }
 }
 
-void AssignmentApplication::InitializeRedCube()
+void AssignmentApplication::InitializeChessPieces()
 {
     // ----------------------------------Geometry Setup---------------------------------------
 
@@ -120,6 +121,11 @@ void AssignmentApplication::InitializeRedCube()
     // --------------------------------Model Matrix Setup-------------------------------------
 
     m_cubeModelMatrix = glm::mat4(1.0f);
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 2; j++){
+            PlaceChessPiece(i,j);
+        }
+    }
     
     // -----------------------------------Buffer Setup & Layout--------------------------------
 
@@ -137,10 +143,27 @@ void AssignmentApplication::InitializeRedCube()
 
     // ---------------------------------------- VAO Setup -------------------------------------
 
-    m_redCubeVAO = std::make_shared<VertexArray>();
-    m_redCubeVAO->AddVertexBuffer(cubeVertexBuffer);
-    m_redCubeVAO->SetIndexBuffer(cubeIndexBuffer);
-    m_redCubeVAO->Unbind();
+    m_chessPiecesVAO = std::make_shared<VertexArray>();
+    m_chessPiecesVAO->AddVertexBuffer(cubeVertexBuffer);
+    m_chessPiecesVAO->SetIndexBuffer(cubeIndexBuffer);
+
+
+    m_chessPiecesVAO->Unbind();
+}
+
+void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
+{
+    ChessPiece piece;
+    piece.gridX = gridX;
+    piece.gridY = gridY;
+    piece.position = GetTileWorldPosition(gridX, gridY);
+    
+    // Create model matrix: scale the piece to reasonable size
+    piece.modelMatrix = glm::mat4(1.0f);
+    piece.modelMatrix = glm::translate(piece.modelMatrix, piece.position);
+    piece.modelMatrix = glm::scale(piece.modelMatrix, glm::vec3(0.2f)); // Adjust size
+    
+    m_chessPieces.push_back(piece);
 }
 
 void AssignmentApplication::InitializeChessboard()
@@ -244,4 +267,19 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
 
     // Update key state for next frame
     keyWasPressed = keyIsPressed;
+}  
+
+glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
+    // Convert grid coordinates (0-7) to unit grid space (-0.5 to 0.5)
+    float normalizedX = (gridX / float(GRID_SIZE)) - 0.5f + (0.5f / GRID_SIZE);
+    float normalizedY = (gridY / float(GRID_SIZE)) - 0.5f + (0.5f / GRID_SIZE);
+    
+    // Create position in grid space (z=0 since chessboard is 2D)
+    glm::vec4 gridPosition = glm::vec4(normalizedX, normalizedY, 0.0f, 1.0f);
+    
+    // Apply chessboard transformation to get world position
+    glm::vec4 worldPosition = m_chessboardModelMatrix * gridPosition;
+    
+    // Offset the piece above the board (adjust height as needed)
+    return glm::vec3(worldPosition.x, worldPosition.y, worldPosition.z + 0.0f);
 }
