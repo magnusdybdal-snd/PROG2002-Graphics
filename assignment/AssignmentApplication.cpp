@@ -121,8 +121,13 @@ void AssignmentApplication::InitializeChessPieces()
     // --------------------------------Model Matrix Setup-------------------------------------
 
     m_cubeModelMatrix = glm::mat4(1.0f);
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < GRID_SIZE; i++){
         for (int j = 0; j < 2; j++){
+            PlaceChessPiece(i,j);
+        }
+    }
+    for (int i = 0; i < GRID_SIZE; i++){ // x
+        for (int j = 6; j < GRID_SIZE; j++){ // y
             PlaceChessPiece(i,j);
         }
     }
