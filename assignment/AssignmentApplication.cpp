@@ -222,7 +222,7 @@ void AssignmentApplication::RenderChessPieces()
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());
-        //m_redCubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
+        m_redCubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
 
         RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
