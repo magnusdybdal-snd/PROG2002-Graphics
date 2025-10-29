@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GEOMETRICTOOLS_H_
+#define GEOMETRICTOOLS_H_
 
 #include <vector>
 #include <array>
@@ -174,3 +175,5 @@ namespace GeometricTools
         return vertices;
     }
 }
+
+#endif // GEOMETRICTOOLS_H_

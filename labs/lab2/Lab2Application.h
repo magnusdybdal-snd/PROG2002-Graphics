@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LAB2APPLICATION_H_
+#define LAB2APPLICATION_H_
 
 #include <GLFWApplication.h>
 #include <GeometricTools.h>
@@ -32,3 +33,5 @@ private:
     void RenderChessboard();
     GLuint CompileShader(const std::string& vertexShader, const std::string& fragmentShader);
 };
+
+#endif // LAB2APPLICATION_H_
