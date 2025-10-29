@@ -374,10 +374,15 @@ void AssignmentApplication::InputHandleCameraRotation(GLFWwindow *window)
         m_cameraXPos += CAMERA_ROTATION_SPEED;
         m_cameraYPos += CAMERA_ROTATION_SPEED;
     }
-    // Calculate camera position in spherical coordinates
-    float x = glm::sin(m_cameraXPos)    * m_cameraZoomValue;
-    float y = -(glm::cos(m_cameraYPos)) * m_cameraZoomValue;
-    float z = m_cameraZoomValue;
+    // Define camera angle
+    float angleX = glm::sin(m_cameraXPos);
+    float angleY = -glm::cos(m_cameraXPos);
+    float angleZ = 0.5f;
+
+    // Apply zoom
+    float x = angleX * m_cameraZoomValue;
+    float y = angleY * m_cameraZoomValue;
+    float z = angleZ * m_cameraZoomValue;
     
     m_camera->SetPosition(glm::vec3(x, y, z));
 }
