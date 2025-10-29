@@ -31,6 +31,7 @@ AssignmentApplication::~AssignmentApplication()
  * Initializes the application
  * Sets up the camera with perspective projection, enables depth testing,
  * and initializes the chessboard, chess pieces, and shaders
+ * 
  * @return EXIT_SUCCESS if initialization succeeds, EXIT_FAILURE otherwise
  */
 unsigned AssignmentApplication::Init()
@@ -60,6 +61,7 @@ unsigned AssignmentApplication::Init()
 /**
  * Main application loop
  * Continuously renders the scene, processes input, and swaps buffers until the window is closed
+ * 
  * @return EXIT_SUCCESS when the application exits normally
  */
 unsigned AssignmentApplication::Run()
@@ -220,6 +222,7 @@ void AssignmentApplication::InitializeChessPieces()
  * Places a chess piece at the specified grid coordinates
  * Creates a ChessPiece with the given position, calculates its world position,
  * builds its model matrix, and adds it to the pieces vector
+ * 
  * @param gridX The X coordinate on the grid (0-7)
  * @param gridY The Y coordinate on the grid (0-7)
  */
@@ -314,6 +317,7 @@ void AssignmentApplication::InitializeShaders()
  * Handles tile selection input using arrow keys
  * Uses debouncing to prevent multiple triggers from a single key press
  * Updates m_selectedX and m_selectedY based on arrow key input
+ * 
  * @param window The GLFW window to poll for input
  */
 void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
@@ -362,6 +366,7 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
  * Second Enter press attempts to move the selected piece to the current tile
  * Movement is blocked if the destination tile is occupied
  * Uses debouncing to prevent multiple triggers from a single key press
+ * 
  * @param window The GLFW window to poll for input
  */
 void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
@@ -414,8 +419,10 @@ void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
 
 /**
  * Checks if a chess piece is at the given grid position and returns its index
+ * 
  * @param gridX The X coordinate on the grid (0-7)
  * @param gridY The Y coordinate on the grid (0-7)
+ * 
  * @return The index of the piece at the given position, or -1 if no piece is found
  */
 int AssignmentApplication::FindPieceAt(int gridX, int gridY) const 
@@ -433,8 +440,10 @@ int AssignmentApplication::FindPieceAt(int gridX, int gridY) const
  * Converts grid coordinates to world space position
  * Takes grid coordinates (0-7), normalizes them to unit grid space (-0.5 to 0.5),
  * applies the chessboard transformation matrix, and offsets the piece above the board
+ * 
  * @param gridX The X coordinate on the grid (0-7)
  * @param gridY The Y coordinate on the grid (0-7)
+ * 
  * @return The world space position (vec3) where the piece should be placed
  */
 glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
