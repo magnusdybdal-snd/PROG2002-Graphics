@@ -51,7 +51,7 @@ private:
     static constexpr float CAMERA_FAR_PLANE = 10.0f;
     static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
     static constexpr float CAMERA_ZOOM_SPEED = 1.5f;
-    static constexpr float CAMERA_ROTATION_SPEED = 0.05f;
+    static constexpr float CAMERA_ROTATION_SPEED = 0.01f;
 
     // ===== DYNAMIC CAMERA VARIABLES =====
     float m_cameraXPos;

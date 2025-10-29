@@ -364,16 +364,6 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
 
 void AssignmentApplication::InputHandleCameraRotation(GLFWwindow *window)
 {
-    // static bool enterWasPressed = false;
-    // bool enterPressed = (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS);
-    // bool enterPressed = (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS);
-
-    // m_camera = std::make_unique<PerspectiveCamera>(
-    //     PerspectiveCamera::Frustrum{CAMERA_FOV, CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE},
-    //     glm::vec3(2.5f, -2.5f, 2.0f), // camera position.
-    //     glm::vec3(0.0f, 0.0f, 0.0f), // look at vector.
-    //     glm::vec3(0.0f, 0.0f, 1.0f)  // up-direction.
-    // );
     // H = Rotate left
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
         m_cameraXPos -= CAMERA_ROTATION_SPEED;
@@ -384,7 +374,12 @@ void AssignmentApplication::InputHandleCameraRotation(GLFWwindow *window)
         m_cameraXPos += CAMERA_ROTATION_SPEED;
         m_cameraYPos += CAMERA_ROTATION_SPEED;
     }
-    m_camera->SetPosition(glm::vec3(glm::sin(m_cameraXPos), glm::cos(m_cameraYPos), 2.0f) * glm::vec3(m_cameraZoomValue, m_cameraZoomValue, 1.0f));
+    // Calculate camera position in spherical coordinates
+    float x = glm::sin(m_cameraXPos)    * m_cameraZoomValue;
+    float y = -(glm::cos(m_cameraYPos)) * m_cameraZoomValue;
+    float z = 2.0f;
+    
+    m_camera->SetPosition(glm::vec3(x, y, z));
 }
 
 /**
