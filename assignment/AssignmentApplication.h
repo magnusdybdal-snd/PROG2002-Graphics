@@ -41,6 +41,7 @@ private:
 
     // ===== CHESSPIECES CONSTANTS =====
     static constexpr float CHESSPIECE_SCALE = 0.2f;
+    static constexpr float CHESSPIECE_Y_OFFSET = 0.12f;
     
     // ===== CAMERA CONSTANTS =====
     static constexpr float CAMERA_FOV = 45.0f;              // degrees
@@ -49,6 +50,13 @@ private:
     static constexpr float CAMERA_NEAR_PLANE = 1.0f;
     static constexpr float CAMERA_FAR_PLANE = 10.0f;
     static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
+    static constexpr float CAMERA_ZOOM_SPEED = 1.5f;
+    static constexpr float CAMERA_ROTATION_SPEED = 0.05f;
+
+    // ===== DYNAMIC CAMERA VARIABLES =====
+    float m_cameraXPos;
+    float m_cameraYPos;
+    float m_cameraZoomValue = 3.5f;
 
     std::shared_ptr<VertexArray> m_chessboardVAO;
     std::shared_ptr<VertexArray> m_chessPiecesVAO;
@@ -76,6 +84,8 @@ private:
     void InitializeChessboard();
     void InitializeShaders();
     void InputHandleTileSelection(GLFWwindow* window);
+    void InputHandleCameraRotation(GLFWwindow* window);
+ //   void InputHandleCameraZoom(GLFWwindow* window);
     void InputHandlePieceSelection(GLFWwindow* window);
     glm::vec3 GetTileWorldPosition(int gridX, int gridY);
     int FindPieceAt(int gridX, int gridY) const;
