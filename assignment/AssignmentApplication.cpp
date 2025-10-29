@@ -5,8 +5,8 @@
 
 #include "shaders/chess_assignment_fragment.h"
 #include "shaders/chess_assignment_vertex.h"
-#include "shaders/red_cube_fragment.h"
-#include "shaders/red_cube_vertex.h"
+#include "shaders/cube_fragment.h"
+#include "shaders/cube_vertex.h"
 
 /**
  * Constructor for AssignmentApplication
@@ -175,7 +175,7 @@ void AssignmentApplication::InitializeShaders()
         chessboardVertexShaderSrc.c_str(), chessboardFragmentShaderSrc.c_str()
     );
     m_redCubeShaderProgram = std::make_unique<Shader>(
-        redCubeVertexShaderSrc.c_str(), redCubeFragmentShaderSrc.c_str()
+        cubeVertexShaderSrc.c_str(), cubeFragmentShaderSrc.c_str()
     );
 }
 
