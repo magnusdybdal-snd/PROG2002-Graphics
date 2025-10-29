@@ -7,19 +7,33 @@
 #include "shaders/red_cube_fragment.h"
 #include "shaders/red_cube_vertex.h"
 
+/**
+ * Constructor for AssignmentApplication
+ * Initializes the application with the given name and version, and sets up the window dimensions (800x600)
+ * Also initializes the selected tile position to (0,0)
+ */
 AssignmentApplication::AssignmentApplication(const std::string &name, const std::string &version)
     : GLFWApplication(name, version, 800, 600),
     m_selectedX(0),
     m_selectedY(0)
 {
-
 }
 
+/**
+ * Destructor for AssignmentApplication
+ * Resources are cleaned up by pointers and class destructors in VAO, VBO, EBO and Shaders
+ */
 AssignmentApplication::~AssignmentApplication()
 {
-
 }
 
+/**
+ * Initializes the application
+ * Sets up the camera with perspective projection, enables depth testing,
+ * and initializes the chessboard, chess pieces, and shaders
+ * 
+ * @return EXIT_SUCCESS if initialization succeeds, EXIT_FAILURE otherwise
+ */
 unsigned AssignmentApplication::Init()
 {
     // Call parent Init first to setup GLFW, window, OpenGL context)
@@ -44,6 +58,12 @@ unsigned AssignmentApplication::Init()
     return EXIT_SUCCESS;
 }
 
+/**
+ * Main application loop
+ * Continuously renders the scene, processes input, and swaps buffers until the window is closed
+ * 
+ * @return EXIT_SUCCESS when the application exits normally
+ */
 unsigned AssignmentApplication::Run()
 {
     // Get the window
@@ -71,18 +91,28 @@ unsigned AssignmentApplication::Run()
     return EXIT_SUCCESS;
 }
 
+/**
+ * Handles all user input for the application
+ * Processes tile selection with arrow keys, piece selection/movement with Enter, and exit with Q
+ */
 void AssignmentApplication::HandleInput()
 {
     // Get the window
     GLFWwindow* window = GetWindow();
 
     InputHandleTileSelection(window);
+    InputHandlePieceSelection(window);
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 }
 
+/**
+ * Renders the chessboard
+ * Binds the chessboard shader and VAO, uploads necessary uniforms (model matrix, view-projection matrix,
+ * selected tile, and grid size), and issues the draw call
+ */
 void AssignmentApplication::RenderChessboard()
 {
     m_chessboardShaderProgram->Bind();
@@ -98,6 +128,11 @@ void AssignmentApplication::RenderChessboard()
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
 
+/**
+ * Renders all chess pieces
+ * Iterates through all pieces, determines their color based on selection state and position,
+ * uploads uniforms, and draws each piece with its own model matrix
+ */
 void AssignmentApplication::RenderChessPieces()
 {
     m_redCubeShaderProgram->Bind();
@@ -105,17 +140,38 @@ void AssignmentApplication::RenderChessPieces()
 
     for (unsigned int i = 0; i < m_chessPieces.size(); i++){
         const auto& piece = m_chessPieces[i];
-        glm::vec3 color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
-        
+
+        glm::vec3 color;
+
+        // If piece is selected with enter - Yellow
+        if (i == m_selectedPieceIndex) {
+            color = glm::vec3(1.0f, 1.0f, 0.4f);
+        }
+
+        // If tile selector is hovering the piece - Green
+        else if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
+            color = glm::vec3(0.0f, 0.9f, 0.0f);
+        }
+
+        else {
+            color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
+        }
+
         // Draw each piece with its own model matrix
         m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
-            m_camera->GetViewProjectionMatrix());
-            RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
+                                                  m_camera->GetViewProjectionMatrix());
+
+        RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
 }
 
+/**
+ * Initializes the chess pieces
+ * Creates the cube geometry and buffers, sets up the VAO, and places all 32 pieces
+ * in their starting positions (rows 0-1 for red team, rows 6-7 for blue team)
+ */
 void AssignmentApplication::InitializeChessPieces()
 {
     // ----------------------------------Geometry Setup---------------------------------------
@@ -162,6 +218,14 @@ void AssignmentApplication::InitializeChessPieces()
     m_chessPiecesVAO->Unbind();
 }
 
+/**
+ * Places a chess piece at the specified grid coordinates
+ * Creates a ChessPiece with the given position, calculates its world position,
+ * builds its model matrix, and adds it to the pieces vector
+ * 
+ * @param gridX The X coordinate on the grid (0-7)
+ * @param gridY The Y coordinate on the grid (0-7)
+ */
 void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
 {
     ChessPiece piece;
@@ -177,6 +241,11 @@ void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
     m_chessPieces.push_back(piece);
 }
 
+/**
+ * Initializes the chessboard
+ * Generates an 8x8 grid, creates the model matrix with scaling/rotation/translation,
+ * sets up vertex and index buffers, and configures the VAO
+ */
 void AssignmentApplication::InitializeChessboard()
 {
     // ----------------------------------Geometry Setup---------------------------------------
@@ -229,6 +298,10 @@ void AssignmentApplication::InitializeChessboard()
     m_chessboardVAO->Unbind();
 }
 
+/**
+ * Initializes the shader programs
+ * Compiles and links the chessboard and chess piece shaders from source
+ */
 void AssignmentApplication::InitializeShaders()
 {   // TODO move to GLFWApplication
     // Create and compile shaders
@@ -240,6 +313,13 @@ void AssignmentApplication::InitializeShaders()
     );
 }
 
+/**
+ * Handles tile selection input using arrow keys
+ * Uses debouncing to prevent multiple triggers from a single key press
+ * Updates m_selectedX and m_selectedY based on arrow key input
+ * 
+ * @param window The GLFW window to poll for input
+ */
 void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
 {
     // Simple debouncing; track if key was pressed last frame
@@ -280,6 +360,92 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
     keyWasPressed = keyIsPressed;
 }  
 
+/**
+ * Handles piece selection and movement using the Enter key
+ * First Enter press selects a piece at the current tile (if one exists)
+ * Second Enter press attempts to move the selected piece to the current tile
+ * Movement is blocked if the destination tile is occupied
+ * Uses debouncing to prevent multiple triggers from a single key press
+ * 
+ * @param window The GLFW window to poll for input
+ */
+void AssignmentApplication::InputHandlePieceSelection(GLFWwindow* window)
+{
+    static bool enterWasPressed = false;
+    bool enterPressed = (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS);
+    
+    // Edge trigger: only act when Enter is newly pressed
+    if (enterPressed && !enterWasPressed) {
+        
+        // Check that no piece is selected
+        if (m_selectedPieceIndex == -1) {
+            // === SELECTION PHASE ===
+            // Find and select piece at current tile
+            int pieceIndex = FindPieceAt(m_selectedX, m_selectedY);
+            if (pieceIndex != -1) {
+                m_selectedPieceIndex = pieceIndex;
+            }
+        } 
+        else {
+            // === MOVEMENT PHASE ===
+            auto& piece = m_chessPieces[m_selectedPieceIndex];
+            
+            // Check if destination has any piece (including ourselves)
+            int blockingPiece = FindPieceAt(m_selectedX, m_selectedY);
+            
+            // Only move if destination is empty
+            if (blockingPiece == -1) {
+                // Get world position of destination
+                glm::vec3 newPosition = GetTileWorldPosition(m_selectedX, m_selectedY);
+                
+                // Rebuild the matrix of the chesspiece
+                piece.modelMatrix = glm::mat4(1.0f);
+                piece.modelMatrix = glm::translate(piece.modelMatrix, newPosition);
+                piece.modelMatrix = glm::scale(piece.modelMatrix, glm::vec3(CHESSPIECE_SCALE));
+                
+                // Update chesspiece new position
+                piece.position = newPosition;
+                piece.gridX = m_selectedX;
+                piece.gridY = m_selectedY;
+            }
+            
+            // Always deselect (whether move succeeded or was blocked/cancelled)
+            m_selectedPieceIndex = -1;
+        }
+    }
+    
+    enterWasPressed = enterPressed;
+}
+
+/**
+ * Checks if a chess piece is at the given grid position and returns its index
+ * 
+ * @param gridX The X coordinate on the grid (0-7)
+ * @param gridY The Y coordinate on the grid (0-7)
+ * 
+ * @return The index of the piece at the given position, or -1 if no piece is found
+ */
+int AssignmentApplication::FindPieceAt(int gridX, int gridY) const 
+{
+    for (size_t i = 0; i < m_chessPieces.size(); ++i) {
+        if (m_chessPieces[i].gridX == gridX && 
+            m_chessPieces[i].gridY == gridY) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
+}
+
+/**
+ * Converts grid coordinates to world space position
+ * Takes grid coordinates (0-7), normalizes them to unit grid space (-0.5 to 0.5),
+ * applies the chessboard transformation matrix, and offsets the piece above the board
+ * 
+ * @param gridX The X coordinate on the grid (0-7)
+ * @param gridY The Y coordinate on the grid (0-7)
+ * 
+ * @return The world space position (vec3) where the piece should be placed
+ */
 glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
     // Convert grid coordinates (0-7) to unit grid space (-0.5 to 0.5)
     float normalizedX = (gridX / float(GRID_SIZE)) - 0.5f + (0.5f / GRID_SIZE);

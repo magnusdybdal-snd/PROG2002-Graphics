@@ -38,6 +38,9 @@ private:
     static constexpr float CHESSBOARD_SCALE = 3.0f;
     static constexpr float CHESSBOARD_TILT_ANGLE = 0.0f;  // degrees
     static constexpr float CHESSBOARD_Y_OFFSET = 0.0f;
+
+    // ===== CHESSPIECES CONSTANTS =====
+    static constexpr float CHESSPIECE_SCALE = 0.2f;
     
     // ===== CAMERA CONSTANTS =====
     static constexpr float CAMERA_FOV = 45.0f;              // degrees
@@ -73,7 +76,9 @@ private:
     void InitializeChessboard();
     void InitializeShaders();
     void InputHandleTileSelection(GLFWwindow* window);
+    void InputHandlePieceSelection(GLFWwindow* window);
     glm::vec3 GetTileWorldPosition(int gridX, int gridY);
+    int FindPieceAt(int gridX, int gridY) const;
 
     struct ChessPiece {
         glm::mat4 modelMatrix;
@@ -81,6 +86,7 @@ private:
         int gridX;
         int gridY;
     };
+    int m_selectedPieceIndex = -1;
     std::vector<ChessPiece> m_chessPieces;
 };
 #endif // AssignmentApplication_H_
