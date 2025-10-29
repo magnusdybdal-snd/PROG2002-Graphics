@@ -206,10 +206,14 @@ void AssignmentApplication::RenderChessPieces()
 
     for (unsigned int i = 0; i < m_chessPieces.size(); i++){
         const auto& piece = m_chessPieces[i];
+
         glm::vec3 color;
+        glm::mat4 modelMatrix = piece.modelMatrix;
 
         if (i == m_selectedPieceIndex) {
             color = glm::vec3(1.0f, 1.0f, 0.4f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.4f));
+            
         }
         else if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
             color = glm::vec3(0.2f, 0.7f, 0.2f);
@@ -219,7 +223,7 @@ void AssignmentApplication::RenderChessPieces()
         }
 
         m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
-        m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
+        m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());
         m_redCubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
