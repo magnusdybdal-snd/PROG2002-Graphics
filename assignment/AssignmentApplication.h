@@ -85,7 +85,7 @@ private:
     void InitializeShaders();
     void InputHandleTileSelection(GLFWwindow* window);
     void InputHandleCameraRotation(GLFWwindow* window);
- //   void InputHandleCameraZoom(GLFWwindow* window);
+    void InputHandleCameraZoom(GLFWwindow* window);
     void InputHandlePieceSelection(GLFWwindow* window);
     glm::vec3 GetTileWorldPosition(int gridX, int gridY);
     int FindPieceAt(int gridX, int gridY) const;

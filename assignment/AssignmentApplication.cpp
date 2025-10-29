@@ -103,7 +103,7 @@ void AssignmentApplication::HandleInput()
     InputHandleTileSelection(window);
     InputHandlePieceSelection(window);
     InputHandleCameraRotation(window);
- //   InputHandleCameraZoom(window);
+    InputHandleCameraZoom(window);
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -377,9 +377,22 @@ void AssignmentApplication::InputHandleCameraRotation(GLFWwindow *window)
     // Calculate camera position in spherical coordinates
     float x = glm::sin(m_cameraXPos)    * m_cameraZoomValue;
     float y = -(glm::cos(m_cameraYPos)) * m_cameraZoomValue;
-    float z = 2.0f;
+    float z = m_cameraZoomValue;
     
     m_camera->SetPosition(glm::vec3(x, y, z));
+}
+
+void AssignmentApplication::InputHandleCameraZoom(GLFWwindow *window)
+{
+    // O = ZOOM out
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        m_cameraZoomValue += 0.05f;
+    }
+    // P = Zoom in
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        m_cameraZoomValue -= 0.05f;
+    }
+
 }
 
 /**
