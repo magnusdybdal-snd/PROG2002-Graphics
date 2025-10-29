@@ -227,6 +227,7 @@ void AssignmentApplication::HandleInput()
     InputHandlePieceSelection(window);
     InputHandleCameraRotation(window);
     InputHandleCameraZoom(window);
+    InputHandleTextureToggle(window);
 
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -331,6 +332,16 @@ void AssignmentApplication::InputHandleCameraZoom(GLFWwindow *window)
         m_cameraZoomValue -= CAMERA_ZOOM_SPEED;
         m_cameraZoomValue = std::clamp(m_cameraZoomValue, CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM);
     }
+}
+
+void AssignmentApplication::InputHandleTextureToggle(GLFWwindow *window){
+    static bool tWasPressed = false;
+    bool tPressed = (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS);
+       if (tPressed && !tWasPressed) {
+        m_textureEnabled = !m_textureEnabled;
+        std::cout << m_textureEnabled << std::endl;
+    } 
+    tWasPressed = tPressed;
 }
 
 /**

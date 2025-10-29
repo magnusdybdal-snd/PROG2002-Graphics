@@ -61,6 +61,7 @@ private:
     float m_cameraZoomValue = 3.5f;
     
     // ===== DYNAMIC MEMBER VARIABLES =====
+    bool m_textureEnabled = false;
     int m_selectedX = 0;
     int m_selectedY = 0;
 
@@ -91,6 +92,7 @@ private:
     void InputHandlePieceSelection(GLFWwindow* window);
     void InputHandleCameraRotation(GLFWwindow* window);
     void InputHandleCameraZoom(GLFWwindow* window);
+    void InputHandleTextureToggle(GLFWwindow* window);
 
     // ===== HELPER FUNCTIONS =====
     int FindPieceAt(int gridX, int gridY) const;
