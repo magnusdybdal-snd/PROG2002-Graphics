@@ -79,7 +79,7 @@ private:
     // ===== INITIALIIZATION =====
     void InitializeChessboard();
     void InitializeChessPieces();
-    // void InitializeTextures();
+    void InitializeTextures();
     void InitializeShaders();
     
     // ===== RENDERING =====

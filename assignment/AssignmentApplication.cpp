@@ -55,6 +55,7 @@ unsigned AssignmentApplication::Init()
     InitializeChessboard();
     InitializeChessPieces();
     InitializeShaders();
+    InitializeTextures();
 
     return EXIT_SUCCESS;
 }
@@ -154,6 +155,13 @@ void AssignmentApplication::InitializeChessPieces()
     m_chessPiecesVAO->AddVertexBuffer(cubeVertexBuffer);
     m_chessPiecesVAO->SetIndexBuffer(cubeIndexBuffer);
     m_chessPiecesVAO->Unbind();
+}
+
+void AssignmentApplication::InitializeTextures()
+{
+    auto textureManager = TextureManager::GetInstance();
+    textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "chessboard_textue.jpg", 0);
+    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "chesspiece_textue.jpg", 0);
 }
 
 /**

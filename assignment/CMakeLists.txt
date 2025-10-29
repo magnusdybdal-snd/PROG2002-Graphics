@@ -9,20 +9,20 @@ main.cpp
 AssignmentApplication.cpp
 )
 
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy
-#     ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/cube_texture.jpg
-#     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/cube_texture.jpg)
+ add_custom_command(
+     TARGET ${PROJECT_NAME} POST_BUILD
+     COMMAND ${CMAKE_COMMAND} -E copy
+     ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/chessboard_textue.jpg
+     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/chessboard_textue.jpg)
 
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy
-#     ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/floor_texture.jpg
-#     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/floor_texture.jpg)
+ add_custom_command(
+     TARGET ${PROJECT_NAME} POST_BUILD
+     COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/chesspiece_textue.jpg
+     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/chesspiece_textue.jpg)
 
-# target_compile_definitions(${PROJECT_NAME} PRIVATE
-#     TEXTURES_DIR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/")
+ target_compile_definitions(${PROJECT_NAME} PRIVATE
+     TEXTURES_DIR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/")
 
 # glfw, glad and OpenGL::GL are linked trough GLFWApplication
 target_link_libraries(assignment 
