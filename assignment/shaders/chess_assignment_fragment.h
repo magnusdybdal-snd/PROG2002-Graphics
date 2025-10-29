@@ -13,13 +13,17 @@ inline std::string chessboardFragmentShaderSrc = std::string(GLSL_CHESS_FRAGMENT
 
 
 in vec2 v_GridPos;                                              // INPUT:  Interpolated from vertex shader (0 to 1)
+in vec2 v_TCoords;
 uniform int u_GridSize;                                         // INPUT:  Board grid size set in c++ code
 uniform ivec2 u_SelectedTile;                                   // INPUT:  From C++ code (which tile is selected)
+uniform int u_TextureEnabled;
+uniform sampler2D u_FloorTextureSampler;
 out vec4 fragColor;                                             // OUTPUT: Final pixel color
 
 void main()
 {
     vec4 chessboardColor;
+    vec4 textureColor = texture(u_FloorTextureSampler, v_TCoords);
 
     // Convert continous position (0, 1) to tile coordinates (0, 7)
     int tileX = int(floor(v_GridPos.x * float(u_GridSize)));
@@ -51,7 +55,11 @@ void main()
             chessboardColor = vec4(0.9, 0.9, 0.9, 1.0);
         }
 
-        fragColor = chessboardColor;    
+        if (u_TextureEnabled == 0){
+            fragColor = chessboardColor;
+        } else {
+            fragColor = mix(chessboardColor, textureColor, 0.7);
+        }
     }
 }
 )";
