@@ -223,7 +223,7 @@ void AssignmentApplication::RenderChessPieces()
         }
 
         m_cubeShaderProgram->UploadUniformFloat3("u_Color", color);
-        m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
+        m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
         m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());
         m_cubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
