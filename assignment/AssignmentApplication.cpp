@@ -1,6 +1,7 @@
 #include "AssignmentApplication.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "shaders/chess_assignment_fragment.h"
 #include "shaders/chess_assignment_vertex.h"
@@ -392,10 +393,12 @@ void AssignmentApplication::InputHandleCameraZoom(GLFWwindow *window)
     // O = ZOOM out
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
         m_cameraZoomValue += 0.05f;
+        m_cameraZoomValue = std::clamp(m_cameraZoomValue, 0.2f, 10.0f);
     }
     // P = Zoom in
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
         m_cameraZoomValue -= 0.05f;
+        m_cameraZoomValue = std::clamp(m_cameraZoomValue, 0.2f, 10.0f);
     }
 
 }

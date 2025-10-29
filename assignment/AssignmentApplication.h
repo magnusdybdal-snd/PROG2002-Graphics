@@ -47,8 +47,8 @@ private:
     static constexpr float CAMERA_FOV = 45.0f;              // degrees
     static constexpr float CAMERA_WIDTH = 800.0f;
     static constexpr float CAMERA_HEIGHT = 600.0f;
-    static constexpr float CAMERA_NEAR_PLANE = 1.0f;
-    static constexpr float CAMERA_FAR_PLANE = 10.0f;
+    static constexpr float CAMERA_NEAR_PLANE = 0.1f;
+    static constexpr float CAMERA_FAR_PLANE = 15.0f;
     static constexpr float CAMERA_DISTANCE = 5.0f;          // Z distance from origin
     static constexpr float CAMERA_ZOOM_SPEED = 1.5f;
     static constexpr float CAMERA_ROTATION_SPEED = 0.01f;
