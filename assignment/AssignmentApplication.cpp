@@ -55,6 +55,7 @@ unsigned AssignmentApplication::Init()
     InitializeChessboard();
     InitializeChessPieces();
     InitializeShaders();
+    InitializeTextures();
 
     return EXIT_SUCCESS;
 }
@@ -95,7 +96,7 @@ unsigned AssignmentApplication::Run()
  */
 void AssignmentApplication::InitializeChessboard()
 {
-    auto vertices = GeometricTools::UnitGridGeometry2D<GRID_SIZE, GRID_SIZE>();
+    auto vertices = GeometricTools::UnitGridGeometry2DWTCoords<GRID_SIZE, GRID_SIZE>();
     auto indices = GeometricTools::UnitGridTopologyTriangles<GRID_SIZE, GRID_SIZE>();
 
     m_chessboardModelMatrix = glm::mat4(1.0f);
@@ -112,8 +113,10 @@ void AssignmentApplication::InitializeChessboard()
     
     auto chessboardVertexBuffer = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float));
     auto chessboardIndexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
+
     auto chessboardBufferLayout = BufferLayout({
-        { ShaderDataType::Float2, "position" }
+        { ShaderDataType::Float2, "position" },
+        { ShaderDataType::Float2, "tCoords" }
     });
     chessboardVertexBuffer->SetLayout(chessboardBufferLayout);
 
@@ -156,6 +159,13 @@ void AssignmentApplication::InitializeChessPieces()
     m_chessPiecesVAO->Unbind();
 }
 
+void AssignmentApplication::InitializeTextures()
+{
+    auto textureManager = TextureManager::GetInstance();
+    textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "chessboard_textue.jpg", 0);
+    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "chesspiece_textue.jpg", 0);
+}
+
 /**
  * Initializes the shader programs
  */
@@ -181,6 +191,7 @@ void AssignmentApplication::RenderChessboard()
     m_chessboardShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
     m_chessboardShaderProgram->UploadUniformInt("u_GridSize",GRID_SIZE);
+    m_chessboardShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
 
     RenderCommands::DrawIndex(m_chessboardVAO, GL_TRIANGLES);
 }
@@ -201,7 +212,7 @@ void AssignmentApplication::RenderChessPieces()
             color = glm::vec3(1.0f, 1.0f, 0.4f);
         }
         else if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
-            color = glm::vec3(0.0f, 0.9f, 0.0f);
+            color = glm::vec3(0.2f, 0.7f, 0.2f);
         }
         else {
             color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
@@ -211,6 +222,7 @@ void AssignmentApplication::RenderChessPieces()
         m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
         m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());
+        m_redCubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
 
         RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
@@ -227,6 +239,7 @@ void AssignmentApplication::HandleInput()
     InputHandlePieceSelection(window);
     InputHandleCameraRotation(window);
     InputHandleCameraZoom(window);
+    InputHandleTextureToggle(window);
 
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -331,6 +344,15 @@ void AssignmentApplication::InputHandleCameraZoom(GLFWwindow *window)
         m_cameraZoomValue -= CAMERA_ZOOM_SPEED;
         m_cameraZoomValue = std::clamp(m_cameraZoomValue, CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM);
     }
+}
+
+void AssignmentApplication::InputHandleTextureToggle(GLFWwindow *window){
+    static bool tWasPressed = false;
+    bool tPressed = (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS);
+       if (tPressed && !tWasPressed) {
+        m_textureEnabled = !m_textureEnabled;
+    } 
+    tWasPressed = tPressed;
 }
 
 /**
