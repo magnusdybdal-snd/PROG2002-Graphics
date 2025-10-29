@@ -378,7 +378,7 @@ void AssignmentApplication::InputHandleCameraRotation(GLFWwindow *window)
     // Define camera angle
     float angleX = glm::sin(m_cameraXPos);
     float angleY = -glm::cos(m_cameraXPos);
-    float angleZ = 0.5f;
+    float angleZ = 0.45f;
 
     // Apply zoom
     float x = angleX * m_cameraZoomValue;
@@ -392,13 +392,13 @@ void AssignmentApplication::InputHandleCameraZoom(GLFWwindow *window)
 {
     // O = ZOOM out
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-        m_cameraZoomValue += 0.05f;
-        m_cameraZoomValue = std::clamp(m_cameraZoomValue, 0.2f, 10.0f);
+        m_cameraZoomValue += CAMERA_ZOOM_SPEED;
+        m_cameraZoomValue = std::clamp(m_cameraZoomValue, CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM);
     }
     // P = Zoom in
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-        m_cameraZoomValue -= 0.05f;
-        m_cameraZoomValue = std::clamp(m_cameraZoomValue, 0.2f, 10.0f);
+        m_cameraZoomValue -= CAMERA_ZOOM_SPEED;
+        m_cameraZoomValue = std::clamp(m_cameraZoomValue, CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM);
     }
 
 }
