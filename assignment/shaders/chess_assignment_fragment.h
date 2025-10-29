@@ -4,9 +4,9 @@
 #include <string>
 
 #ifdef __APPLE__   // macOS: 4.1 core
-    constexpr const char* GLSL_CHESS_FRAGMENT_VERSION = "#version 410 core\n";
+    constexpr const char* GLSL_CHESS_FRAGMENT_VERSION = "#version 410 core\n uniform sampler2D u_FloorTextureSampler;";
 #else
-    constexpr const char* GLSL_CHESS_FRAGMENT_VERSION = "#version 430 core\n";
+    constexpr const char* GLSL_CHESS_FRAGMENT_VERSION = "#version 430 core\n layout(location = 0) uniform sampler2D u_FloorTextureSampler;";
 #endif
 
 inline std::string chessboardFragmentShaderSrc = std::string(GLSL_CHESS_FRAGMENT_VERSION) + R"(
@@ -17,7 +17,6 @@ in vec2 v_TCoords;
 uniform int u_GridSize;                                         // INPUT:  Board grid size set in c++ code
 uniform ivec2 u_SelectedTile;                                   // INPUT:  From C++ code (which tile is selected)
 uniform int u_TextureEnabled;
-uniform sampler2D u_FloorTextureSampler;
 out vec4 fragColor;                                             // OUTPUT: Final pixel color
 
 void main()
