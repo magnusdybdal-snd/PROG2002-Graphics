@@ -59,39 +59,45 @@ private:
     float m_cameraXPos;
     float m_cameraYPos;
     float m_cameraZoomValue = 3.5f;
+    
+    // ===== DYNAMIC MEMBER VARIABLES =====
+    int m_selectedX = 0;
+    int m_selectedY = 0;
 
+    // ===== SMART POINTERS =====
     std::shared_ptr<VertexArray> m_chessboardVAO;
     std::shared_ptr<VertexArray> m_chessPiecesVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
     std::unique_ptr<Shader> m_redCubeShaderProgram;
     std::unique_ptr<PerspectiveCamera> m_camera;
 
-
+    // ===== MODEL MATRCES =====
     glm::mat4 m_chessboardModelMatrix;
     glm::mat4 m_cubeModelMatrix;
 
-    // Tile selector state (0-7)
-    int m_selectedX = 0;
-    int m_selectedY = 0;
-
-    // Private helper methods
-    void HandleInput();
-    void RenderChessboard();
-
-    void RenderChessPieces();
-    void InitializeChessPieces();
-    void PlaceChessPiece(int gridX, int gridY);
-
-    // void InitializeTextures();
+    // ===== INITIALIIZATION =====
     void InitializeChessboard();
+    void InitializeChessPieces();
+    // void InitializeTextures();
     void InitializeShaders();
+    
+    // ===== RENDERING =====
+    void RenderChessboard();
+    void RenderChessPieces();
+    
+    // ===== INPUT HANDELING =====
+    void HandleInput();
     void InputHandleTileSelection(GLFWwindow* window);
+    void InputHandlePieceSelection(GLFWwindow* window);
     void InputHandleCameraRotation(GLFWwindow* window);
     void InputHandleCameraZoom(GLFWwindow* window);
-    void InputHandlePieceSelection(GLFWwindow* window);
-    glm::vec3 GetTileWorldPosition(int gridX, int gridY);
-    int FindPieceAt(int gridX, int gridY) const;
 
+    // ===== HELPER FUNCTIONS =====
+    int FindPieceAt(int gridX, int gridY) const;
+    void PlaceChessPiece(int gridX, int gridY);
+    glm::vec3 GetTileWorldPosition(int gridX, int gridY);
+
+    // ===== CHESS PIECE STRUCTURE =====
     struct ChessPiece {
         glm::mat4 modelMatrix;
         glm::vec3 position;
