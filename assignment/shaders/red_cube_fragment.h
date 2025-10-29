@@ -14,24 +14,17 @@ uniform samplerCube u_CubeSampler;
 
 in vec3 vs_Position;            // INPUT: Position from vertex shader
 uniform vec3 u_Color;
-uniform int u_Selected;
 uniform int u_TextureEnabled;
 out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
-    vec4 cubeColor;
     vec4 textureColor = texture(u_CubeSampler, vs_Position);
 
-    if (u_Selected == 1) { 
-        cubeColor = vec4(1.0, 1.0, 0.4, 1.0);
-    } else {
-        cubeColor = vec4(u_Color, 1.0);
-   }
    if (u_TextureEnabled == 0){
-        fragColor = cubeColor;
-    } else{
-        fragColor = mix(cubeColor, textureColor, 0.4);
+        fragColor = vec4(u_Color, 1.0);
+    } else {
+        fragColor = mix(vec4(u_Color, 1.0), textureColor, 0.4);
     }
 }
 )";

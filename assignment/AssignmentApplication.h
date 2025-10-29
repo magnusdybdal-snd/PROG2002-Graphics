@@ -56,8 +56,8 @@ private:
     static constexpr float CAMERA_MIN_ZOOM = 10.0f;
 
     // ===== DYNAMIC CAMERA VARIABLES =====
-    float m_cameraXPos;
-    float m_cameraYPos;
+    float m_cameraXPos = 0.0f;
+    float m_cameraYPos = 0.0f;
     float m_cameraZoomValue = 3.5f;
     
     // ===== DYNAMIC MEMBER VARIABLES =====

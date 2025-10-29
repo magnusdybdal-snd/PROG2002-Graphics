@@ -44,7 +44,7 @@ void main()
 
      if (isSelected) {
         // Selected tile: Green
-        fragColor = vec4(0.0, 0.9, 0.0, 1.0);
+        fragColor = vec4(0.2, 0.6, 0.2, 1.0);
      } else {
         if (isBlack) {
             // Black tile
