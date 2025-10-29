@@ -69,7 +69,7 @@ private:
     std::shared_ptr<VertexArray> m_chessboardVAO;
     std::shared_ptr<VertexArray> m_chessPiecesVAO;
     std::unique_ptr<Shader> m_chessboardShaderProgram;
-    std::unique_ptr<Shader> m_redCubeShaderProgram;
+    std::unique_ptr<Shader> m_cubeShaderProgram;
     std::unique_ptr<PerspectiveCamera> m_camera;
 
     // ===== MODEL MATRCES =====
