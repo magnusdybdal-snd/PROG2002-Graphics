@@ -5,8 +5,8 @@
 
 #include "shaders/chess_assignment_fragment.h"
 #include "shaders/chess_assignment_vertex.h"
-#include "shaders/red_cube_fragment.h"
-#include "shaders/red_cube_vertex.h"
+#include "shaders/cube_fragment.h"
+#include "shaders/cube_vertex.h"
 
 /**
  * Constructor for AssignmentApplication
@@ -131,8 +131,8 @@ void AssignmentApplication::InitializeChessboard()
  */
 void AssignmentApplication::InitializeChessPieces()
 {
-    auto redCubeVertices = GeometricTools::UnitCubeGeometry3D;
-    auto redCubeIndices = GeometricTools::UnitCubeTopologyTriangles;
+    auto cubeVertices = GeometricTools::UnitCubeGeometry3D;
+    auto cubeIndices = GeometricTools::UnitCubeTopologyTriangles;
 
     m_cubeModelMatrix = glm::mat4(1.0f);
     for (int i = 0; i < GRID_SIZE; i++){
@@ -146,12 +146,12 @@ void AssignmentApplication::InitializeChessPieces()
         }
     }
     
-    auto cubeVertexBuffer = std::make_shared<VertexBuffer>(redCubeVertices.data(), redCubeVertices.size() * sizeof(float));
-    auto cubeIndexBuffer = std::make_shared<IndexBuffer>(redCubeIndices.data(), redCubeIndices.size());
-    auto redCubeBufferLayout = BufferLayout(
+    auto cubeVertexBuffer = std::make_shared<VertexBuffer>(cubeVertices.data(), cubeVertices.size() * sizeof(float));
+    auto cubeIndexBuffer = std::make_shared<IndexBuffer>(cubeIndices.data(), cubeIndices.size());
+    auto cubeBufferLayout = BufferLayout(
         {{ ShaderDataType::Float3, "cube_position" }}
     );
-    cubeVertexBuffer->SetLayout(redCubeBufferLayout);
+    cubeVertexBuffer->SetLayout(cubeBufferLayout);
 
     m_chessPiecesVAO = std::make_shared<VertexArray>();
     m_chessPiecesVAO->AddVertexBuffer(cubeVertexBuffer);
@@ -174,8 +174,8 @@ void AssignmentApplication::InitializeShaders()
     m_chessboardShaderProgram = std::make_unique<Shader>(
         chessboardVertexShaderSrc.c_str(), chessboardFragmentShaderSrc.c_str()
     );
-    m_redCubeShaderProgram = std::make_unique<Shader>(
-        redCubeVertexShaderSrc.c_str(), redCubeFragmentShaderSrc.c_str()
+    m_cubeShaderProgram = std::make_unique<Shader>(
+        cubeVertexShaderSrc.c_str(), cubeFragmentShaderSrc.c_str()
     );
 }
 
@@ -201,7 +201,7 @@ void AssignmentApplication::RenderChessboard()
  */
 void AssignmentApplication::RenderChessPieces()
 {
-    m_redCubeShaderProgram->Bind();
+    m_cubeShaderProgram->Bind();
     m_chessPiecesVAO->Bind();
 
     for (unsigned int i = 0; i < m_chessPieces.size(); i++){
@@ -222,11 +222,11 @@ void AssignmentApplication::RenderChessPieces()
             color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
         }
 
-        m_redCubeShaderProgram->UploadUniformFloat3("u_Color", color);
-        m_redCubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
-        m_redCubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
+        m_cubeShaderProgram->UploadUniformFloat3("u_Color", color);
+        m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", piece.modelMatrix);
+        m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());
-        m_redCubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
+        m_cubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
 
         RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);
     }
