@@ -1,6 +1,7 @@
 #include "AssignmentApplication.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "shaders/chess_assignment_fragment.h"
 #include "shaders/chess_assignment_vertex.h"
@@ -44,8 +45,8 @@ unsigned AssignmentApplication::Init()
     // =============== CAMERA SETUP ===============
     m_camera = std::make_unique<PerspectiveCamera>(
         PerspectiveCamera::Frustrum{CAMERA_FOV, CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE},
-        glm::vec3(2.5f, -2.5f, 2.0f), // camera position.
-        glm::vec3(0.0f, 0.0f, 0.0f), // look at vector.
+        glm::vec3(0.0f, 0.0f, 0.0f), // camera position - Values are updated during render loop.
+        glm::vec3(0.0f, 0.0f, 0.0f), // look at vector - camera looks at origin.
         glm::vec3(0.0f, 0.0f, 1.0f)  // up-direction.
     );
     
@@ -102,6 +103,8 @@ void AssignmentApplication::HandleInput()
 
     InputHandleTileSelection(window);
     InputHandlePieceSelection(window);
+    InputHandleCameraRotation(window);
+    InputHandleCameraZoom(window);
     // ESC to exit program
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -236,7 +239,7 @@ void AssignmentApplication::PlaceChessPiece(int gridX, int gridY)
     // Create model matrix: scale the piece to reasonable size
     piece.modelMatrix = glm::mat4(1.0f);
     piece.modelMatrix = glm::translate(piece.modelMatrix, piece.position);
-    piece.modelMatrix = glm::scale(piece.modelMatrix, glm::vec3(0.2f)); // Adjust size
+    piece.modelMatrix = glm::scale(piece.modelMatrix, glm::vec3(CHESSPIECE_SCALE)); // Adjust size
     
     m_chessPieces.push_back(piece);
 }
@@ -358,7 +361,47 @@ void AssignmentApplication::InputHandleTileSelection(GLFWwindow *window)
 
     // Update key state for next frame
     keyWasPressed = keyIsPressed;
-}  
+}
+
+void AssignmentApplication::InputHandleCameraRotation(GLFWwindow *window)
+{
+    // H = Rotate left
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
+        m_cameraXPos -= CAMERA_ROTATION_SPEED;
+        m_cameraYPos -= CAMERA_ROTATION_SPEED;
+    }
+    // L = Rotate right
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        m_cameraXPos += CAMERA_ROTATION_SPEED;
+        m_cameraYPos += CAMERA_ROTATION_SPEED;
+    }
+    // Define camera angle
+    float angleX = glm::sin(m_cameraXPos);
+    float angleY = -glm::cos(m_cameraXPos);
+    float angleZ = 0.45f;
+
+    // Apply zoom
+    float x = angleX * m_cameraZoomValue;
+    float y = angleY * m_cameraZoomValue;
+    float z = angleZ * m_cameraZoomValue;
+    
+    m_camera->SetPosition(glm::vec3(x, y, z));
+}
+
+void AssignmentApplication::InputHandleCameraZoom(GLFWwindow *window)
+{
+    // O = ZOOM out
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        m_cameraZoomValue += CAMERA_ZOOM_SPEED;
+        m_cameraZoomValue = std::clamp(m_cameraZoomValue, CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM);
+    }
+    // P = Zoom in
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        m_cameraZoomValue -= CAMERA_ZOOM_SPEED;
+        m_cameraZoomValue = std::clamp(m_cameraZoomValue, CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM);
+    }
+
+}
 
 /**
  * Handles piece selection and movement using the Enter key
@@ -458,5 +501,5 @@ glm::vec3 AssignmentApplication::GetTileWorldPosition(int gridX, int gridY) {
     glm::vec4 worldPosition = m_chessboardModelMatrix * gridPosition;
     
     // Offset the piece above the board (adjust height as needed)
-    return glm::vec3(worldPosition.x, worldPosition.y, worldPosition.z + 0.12f);
+    return glm::vec3(worldPosition.x, worldPosition.y, worldPosition.z + CHESSPIECE_Y_OFFSET);
 }
