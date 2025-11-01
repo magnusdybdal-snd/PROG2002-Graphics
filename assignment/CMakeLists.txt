@@ -12,14 +12,14 @@ AssignmentApplication.cpp
  add_custom_command(
      TARGET ${PROJECT_NAME} POST_BUILD
      COMMAND ${CMAKE_COMMAND} -E copy
-     ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/chessboard_textue.jpg
-     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/chessboard_textue.jpg)
+     ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/chessboard_texture.jpg
+     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/chessboard_texture.jpg)
 
  add_custom_command(
      TARGET ${PROJECT_NAME} POST_BUILD
      COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/chesspiece_textue.jpg
-     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/chesspiece_textue.jpg)
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/chesspiece_texture.jpg
+     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/chesspiece_texture.jpg)
 
  target_compile_definitions(${PROJECT_NAME} PRIVATE
      TEXTURES_DIR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources/textures/")

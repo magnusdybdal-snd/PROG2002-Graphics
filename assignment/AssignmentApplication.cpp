@@ -162,8 +162,12 @@ void AssignmentApplication::InitializeChessPieces()
 void AssignmentApplication::InitializeTextures()
 {
     auto textureManager = TextureManager::GetInstance();
-    textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "chessboard_textue.jpg", 0);
-    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "chesspiece_textue.jpg", 0);
+    textureManager->LoadTexture2D("floorTexture", std::string(TEXTURES_DIR) + "chessboard_texture.jpg", 0);
+    #ifdef __APPLE__ 
+    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "chesspiece_texture.jpg", 0);
+    #else
+    textureManager->LoadCubeMap("cubeTexture", std::string(TEXTURES_DIR) + "chesspiece_texture.jpg", 1);
+    #endif
 }
 
 /**
