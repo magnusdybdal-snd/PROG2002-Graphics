@@ -74,10 +74,10 @@ unsigned AssignmentApplication::Run()
     // Main rendering loop
     while (!glfwWindowShouldClose(window)) 
     {
-
-        m_global_illumination = 0.5 + (sin(glfwGetTime() * 0.5f));
+                                                // speed / value shift
+        m_global_illumination = (sin(glfwGetTime() * 3.0f) + 1.0f) * 0.5f;
         // clear screen
-        RenderCommands::SetClearColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f)* m_global_illumination);
+        RenderCommands::SetClearColor(glm::vec4(1.0f) * m_global_illumination);
         RenderCommands::Clear();
 
         // Process events
@@ -196,6 +196,7 @@ void AssignmentApplication::RenderChessboard()
     m_chessboardShaderProgram->UploadUniformMat4("u_ChessboardModelMatrix", m_chessboardModelMatrix);
     m_chessboardShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
+    m_chessboardShaderProgram->UploadUniformFloat1("u_ambientStrength", glm::vec1(m_global_illumination));
     m_chessboardShaderProgram->UploadUniformInt("u_GridSize",GRID_SIZE);
     m_chessboardShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
 
@@ -217,7 +218,7 @@ void AssignmentApplication::RenderChessPieces()
         glm::vec1 ambientStrength;
         glm::vec3 color;
         
-        ambientStrength = glm::vec1(0.5f); // set ambient strength value
+        //ambientStrength = glm::vec1(0.5f); // set ambient strength value
 
         if (i == m_selectedPieceIndex) {
             color = glm::vec3(1.0f, 1.0f, 0.4f); // yellow color (selected cube)
@@ -233,7 +234,7 @@ void AssignmentApplication::RenderChessPieces()
         }
 
         m_cubeShaderProgram->UploadUniformFloat3("u_Color", color);
-        m_cubeShaderProgram->UploadUniformFloat1("u_ambientStrength", ambientStrength);
+        m_cubeShaderProgram->UploadUniformFloat1("u_ambientStrength", glm::vec1(m_global_illumination));
         m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
         m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());

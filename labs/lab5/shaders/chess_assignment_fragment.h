@@ -16,6 +16,7 @@ in vec2 v_GridPos;                                              // INPUT:  Inter
 in vec2 v_TCoords;
 uniform int u_GridSize;                                         // INPUT:  Board grid size set in c++ code
 uniform ivec2 u_SelectedTile;                                   // INPUT:  From C++ code (which tile is selected)
+uniform float u_ambientStrength = 1.0;
 uniform int u_TextureEnabled;
 out vec4 fragColor;                                             // OUTPUT: Final pixel color
 
@@ -43,7 +44,7 @@ void main()
 
      if (isSelected) {
         // Selected tile: Green
-        fragColor = vec4(0.2, 0.6, 0.2, 1.0);
+        fragColor = vec4(0.2, 0.6, 0.2, 1.0) * u_ambientStrength;
      } else {
         if (isBlack) {
             // Black tile
@@ -55,9 +56,9 @@ void main()
         }
 
         if (u_TextureEnabled == 0){
-            fragColor = chessboardColor;
+            fragColor = chessboardColor * u_ambientStrength;
         } else {
-            fragColor = mix(chessboardColor, textureColor, 0.7);
+            fragColor = mix(chessboardColor, textureColor, 0.7) * u_ambientStrength;
         }
     }
 }
