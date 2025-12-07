@@ -76,15 +76,18 @@ unsigned AssignmentApplication::Run()
     {
                                                 // speed / value shift
         //m_global_illumination = (sin(glfwGetTime() * 3.0f) + 1.0f) * 0.5f;
-        m_global_illumination = 0.0f;
+        m_global_illumination = 0.4f;
         // clear screen
         RenderCommands::SetClearColor(glm::vec4(1.0f) * m_global_illumination);
         RenderCommands::Clear();
 
         // Process events
         glfwPollEvents();
-        m_lightSourcePosition = m_camera->GetPosition();
         HandleInput();
+
+        m_cameraPosition = m_camera->GetPosition();
+        // Static light position above the board
+        m_lightSourcePosition = glm::vec3(0.0f, 2.0f, 1.0f);
         
         RenderChessboard();
         RenderChessPieces();
@@ -223,7 +226,6 @@ void AssignmentApplication::RenderChessPieces()
         const auto& piece = m_chessPieces[i];
         
         glm::mat4 modelMatrix = piece.modelMatrix;
-        glm::vec1 ambientStrength;
         glm::vec3 color;
 
         if (i == m_selectedPieceIndex) {
@@ -241,11 +243,12 @@ void AssignmentApplication::RenderChessPieces()
 
         m_cubeShaderProgram->UploadUniformFloat3("u_Color", color);
         m_cubeShaderProgram->UploadUniformFloat3("u_lightSourcePosition", m_lightSourcePosition);
-        m_cubeShaderProgram->UploadUniformFloat1("u_diffuseStr", glm::vec1(1.0f));
+        m_cubeShaderProgram->UploadUniformFloat3("u_cameraPosition", m_cameraPosition);
+        m_cubeShaderProgram->UploadUniformFloat1("u_specularStr", glm::vec1(0.5f));
+        m_cubeShaderProgram->UploadUniformFloat1("u_diffuseStr", glm::vec1(1.0f)); // Hard coded, make var if want to change :)
         m_cubeShaderProgram->UploadUniformFloat1("u_ambientStrength", glm::vec1(m_global_illumination));
         m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
-        m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
-                                                  m_camera->GetViewProjectionMatrix());
+        m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
         m_cubeShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
 
         RenderCommands::DrawIndex(m_chessPiecesVAO, GL_TRIANGLES);

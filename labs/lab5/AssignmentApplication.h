@@ -60,6 +60,8 @@ private:
     float m_cameraYPos = 0.0f;
     float m_cameraZoomValue = 3.5f;
     glm::vec3 m_lightSourcePosition = glm::vec3(1.0f);
+    glm::vec3 m_cameraPosition = glm::vec3(1.0f);
+    float m_ambientStrength = 1.0f;
     
     // ===== DYNAMIC MEMBER VARIABLES =====
     bool m_textureEnabled = false;
