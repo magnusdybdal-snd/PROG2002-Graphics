@@ -64,6 +64,7 @@ private:
     bool m_textureEnabled = false;
     int m_selectedX = 0;
     int m_selectedY = 0;
+    glm::vec3 m_global_illumination = glm::vec3(1.0f, 1.0f, 1.0f);
 
     // ===== SMART POINTERS =====
     std::shared_ptr<VertexArray> m_chessboardVAO;
