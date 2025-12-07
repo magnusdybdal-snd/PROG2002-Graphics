@@ -79,7 +79,7 @@ namespace GeometricTools
     };
 
     // Unit cube topology for 24-vertex cube with normals - 6 faces × 2 triangles × 3 indices = 36 indices
-    constexpr std::array<unsigned int, 36> UnitCube3D24WNormalsTopologyTriangles = {
+    constexpr std::array<unsigned int, 6 * 3 * 2> UnitCube3D24WNormalsTopologyTriangles = {
         // Front face (indices 0-3)
         0, 1, 2,    2, 3, 0,
         // Back face (indices 4-7)
