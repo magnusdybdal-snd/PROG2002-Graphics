@@ -21,16 +21,22 @@ uniform int u_TextureEnabled;
 
 out vec2 v_GridPos;                         // OUTPUT: Pass grid position to fragment shader
 out vec2 v_TCoords;                         // OUTPUT: Pass texture coordinates to fragment shader.
+out vec4 vs_Normal;
+out vec4 vs_FragPosition;
 
-void main() 
+void main()
 {
     // Set vertex position in clip space.
     gl_Position = u_ViewProjectionMatrix * u_ChessboardModelMatrix * vec4(a_Position, 0.0, 1.0);
+
+    vs_FragPosition = u_ChessboardModelMatrix * vec4(a_Position, 0.0, 1.0);
 
     // Convert from (-0.5, 0.5) to (0.0, 1.0) and pass to fragment shader
     v_GridPos = a_Position + 0.5;
     // Pass texture coordinates to fragment shader.
     v_TCoords = a_TCoords;
+
+    vs_Normal = normalize(u_ChessboardModelMatrix * vec4(0.0, 0.0, 1.0, 1.0));
 
 }
 )";

@@ -83,8 +83,9 @@ unsigned AssignmentApplication::Run()
 
         // Process events
         glfwPollEvents();
-        HandleInput();
         m_lightSourcePosition = m_camera->GetPosition();
+        HandleInput();
+        
         RenderChessboard();
         RenderChessPieces();
 
@@ -201,6 +202,8 @@ void AssignmentApplication::RenderChessboard()
     m_chessboardShaderProgram->UploadUniformMat4("u_ChessboardModelMatrix", m_chessboardModelMatrix);
     m_chessboardShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());
     m_chessboardShaderProgram->UploadUniformInt2("u_SelectedTile", glm::ivec2(m_selectedX, m_selectedY));
+    m_chessboardShaderProgram->UploadUniformFloat3("u_lightSourcePosition", m_lightSourcePosition);
+    m_chessboardShaderProgram->UploadUniformFloat1("u_diffuseStr", glm::vec1(1.0f));
     m_chessboardShaderProgram->UploadUniformFloat1("u_ambientStrength", glm::vec1(m_global_illumination));
     m_chessboardShaderProgram->UploadUniformInt("u_GridSize",GRID_SIZE);
     m_chessboardShaderProgram->UploadUniformInt("u_TextureEnabled",(int)m_textureEnabled);
