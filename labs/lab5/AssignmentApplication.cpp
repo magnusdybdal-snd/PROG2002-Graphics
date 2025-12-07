@@ -75,7 +75,7 @@ unsigned AssignmentApplication::Run()
     while (!glfwWindowShouldClose(window)) 
     {
 
-        m_global_illumination = sin(glfwGetTime() * 0.5f);
+        m_global_illumination = 0.5 + (sin(glfwGetTime() * 0.5f));
         // clear screen
         RenderCommands::SetClearColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f)* m_global_illumination);
         RenderCommands::Clear();
