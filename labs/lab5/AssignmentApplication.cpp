@@ -87,7 +87,7 @@ unsigned AssignmentApplication::Run()
 
         m_cameraPosition = m_camera->GetPosition();
         // Static light position above the board
-        m_lightSourcePosition = glm::vec3(0.0f, 2.0f, 1.0f);
+        m_lightSourcePosition = m_cameraPosition;
         
         RenderChessboard();
         RenderChessPieces();
@@ -245,7 +245,7 @@ void AssignmentApplication::RenderChessPieces()
         m_cubeShaderProgram->UploadUniformFloat3("u_lightSourcePosition", m_lightSourcePosition);
         m_cubeShaderProgram->UploadUniformFloat3("u_cameraPosition", m_cameraPosition);
         m_cubeShaderProgram->UploadUniformFloat1("u_specularStr", glm::vec1(0.5f));
-        m_cubeShaderProgram->UploadUniformFloat1("u_diffuseStr", glm::vec1(1.0f)); // Hard coded, make var if want to change :)
+        m_cubeShaderProgram->UploadUniformFloat1("u_diffuseStr", glm::vec1(0.5f)); // Hard coded, make var if want to change :)
         m_cubeShaderProgram->UploadUniformFloat1("u_ambientStrength", glm::vec1(m_global_illumination));
         m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
         m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", m_camera->GetViewProjectionMatrix());

@@ -28,7 +28,7 @@ void main()
     vs_FragPosition = u_CubeModelMatrix * vec4(i_Position, 1.0);
 
     //vs_Position = i_Position;
-    vs_Normal = normalize(u_CubeModelMatrix * vec4(i_Normal, 1.0));
+    vs_Normal = normalize(u_CubeModelMatrix * vec4(i_Normal, 0.0));
 }
 )";
 
