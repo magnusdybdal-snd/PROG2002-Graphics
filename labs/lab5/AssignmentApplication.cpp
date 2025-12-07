@@ -207,26 +207,31 @@ void AssignmentApplication::RenderChessPieces()
 {
     m_cubeShaderProgram->Bind();
     m_chessPiecesVAO->Bind();
-
+    
     for (unsigned int i = 0; i < m_chessPieces.size(); i++){
         const auto& piece = m_chessPieces[i];
-
-        glm::vec3 color;
+        
         glm::mat4 modelMatrix = piece.modelMatrix;
+        glm::vec1 ambientStrength;
+        glm::vec3 color;
+        
+        ambientStrength = glm::vec1(0.5f); // set ambient strength value
 
         if (i == m_selectedPieceIndex) {
-            color = glm::vec3(1.0f, 1.0f, 0.4f);
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.4f));
+            color = glm::vec3(1.0f, 1.0f, 0.4f); // yellow color (selected cube)
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.4f)); 
             
         }
-        else if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){
+        else if (m_selectedX == piece.gridX && m_selectedY == piece.gridY){ // Green selector color (on cube)
             color = glm::vec3(0.2f, 0.7f, 0.2f);
         }
         else {
-            color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f);
+            color = (i < 16) ? glm::vec3(0.8f, 0.2f, 0.2f) : glm::vec3(0.2f, 0.2f, 0.8f); // cube colors
+
         }
 
         m_cubeShaderProgram->UploadUniformFloat3("u_Color", color);
+        m_cubeShaderProgram->UploadUniformFloat1("u_ambientStrength", ambientStrength);
         m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
         m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 
                                                   m_camera->GetViewProjectionMatrix());
