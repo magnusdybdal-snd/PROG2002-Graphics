@@ -217,8 +217,6 @@ void AssignmentApplication::RenderChessPieces()
         glm::mat4 modelMatrix = piece.modelMatrix;
         glm::vec1 ambientStrength;
         glm::vec3 color;
-        
-        //ambientStrength = glm::vec1(0.5f); // set ambient strength value
 
         if (i == m_selectedPieceIndex) {
             color = glm::vec3(1.0f, 1.0f, 0.4f); // yellow color (selected cube)
