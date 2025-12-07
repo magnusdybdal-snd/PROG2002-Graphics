@@ -75,7 +75,8 @@ unsigned AssignmentApplication::Run()
     while (!glfwWindowShouldClose(window)) 
     {
                                                 // speed / value shift
-        m_global_illumination = (sin(glfwGetTime() * 3.0f) + 1.0f) * 0.5f;
+        //m_global_illumination = (sin(glfwGetTime() * 3.0f) + 1.0f) * 0.5f;
+        m_global_illumination = 0.0f;
         // clear screen
         RenderCommands::SetClearColor(glm::vec4(1.0f) * m_global_illumination);
         RenderCommands::Clear();
@@ -83,6 +84,7 @@ unsigned AssignmentApplication::Run()
         // Process events
         glfwPollEvents();
         HandleInput();
+        m_lightSourcePosition = m_camera->GetPosition();
         RenderChessboard();
         RenderChessPieces();
 
@@ -235,6 +237,8 @@ void AssignmentApplication::RenderChessPieces()
         }
 
         m_cubeShaderProgram->UploadUniformFloat3("u_Color", color);
+        m_cubeShaderProgram->UploadUniformFloat3("u_lightSourcePosition", m_lightSourcePosition);
+        m_cubeShaderProgram->UploadUniformFloat1("u_diffuseStr", glm::vec1(1.0f));
         m_cubeShaderProgram->UploadUniformFloat1("u_ambientStrength", glm::vec1(m_global_illumination));
         m_cubeShaderProgram->UploadUniformMat4("u_CubeModelMatrix", modelMatrix);
         m_cubeShaderProgram->UploadUniformMat4("u_ViewProjectionMatrix", 

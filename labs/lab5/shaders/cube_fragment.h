@@ -12,20 +12,27 @@
 inline std::string cubeFragmentShaderSrc = std::string(GLSL_CUBE_FRAGMENT_VERSION) + R"(
 
 in vec4 vs_FragPosition;        // INPUT: Position from vertex shader (world space)
-in vec4 vs_Normal;              // INPUT: Normal from vertex shader
+in vec4 vs_Normal;              // INPUT: Normal position from vertex shader
+
 uniform vec3 u_Color;
 uniform int u_TextureEnabled;
 uniform float u_ambientStrength = 1.0;
+uniform vec3 u_lightSourcePosition;
+uniform float u_diffuseStr;
+
 out vec4 fragColor;             // OUTPUT: Color
 
 void main()
 {
     vec4 textureColor = texture(u_CubeSampler, vs_FragPosition.xyz);
 
+    vec3 lightDirection = normalize(vec3(u_lightSourcePosition - vs_FragPosition.xyz));
+    float diffuseStrength = max(dot(lightDirection, vs_Normal.xyz), 0.0) * u_diffuseStr;
+
    if (u_TextureEnabled == 0){
-        fragColor = vec4(u_Color, 1.0) * u_ambientStrength;
+        fragColor = vec4(u_Color, 1.0) * (u_ambientStrength + diffuseStrength);
     } else {
-        fragColor = mix(vec4(u_Color, 1.0), textureColor, 0.4) * u_ambientStrength;
+        fragColor = mix(vec4(u_Color, 1.0), textureColor, 0.4) * (u_ambientStrength + diffuseStrength);
     }
 }
 )";
