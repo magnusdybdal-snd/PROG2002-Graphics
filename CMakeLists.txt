@@ -29,9 +29,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Used for debugging - findifn memory leaks. MUST be removed du to performance in normal running of the program. 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+# Used for detecting memory leaks. Comment out before publishing.
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 # GLFW has a CMake script for us to use, but it has some unnecessary settings that are on
 # by default. We just disable these and then include their CMake script, and link our
@@ -70,7 +70,7 @@ add_subdirectory(examples/example_5)
 # Add a subdirectory for a labs and framework.
 add_subdirectory(labs)
 
-# Add a subdirectory for a framework. 
+# Add a subdirectory for a framework.
 add_subdirectory(framework)
 
 # Add a subdirectory for assignments. Like the framework, this is commented out,

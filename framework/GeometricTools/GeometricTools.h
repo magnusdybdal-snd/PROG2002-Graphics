@@ -37,6 +37,63 @@ namespace GeometricTools
         -0.5f,  0.5f, -0.5f     // Top left back
     };
 
+    // Unit cube with normals (24 vertices × 6 floats = 144 floats)
+    // Each vertex: [x, y, z, nx, ny, nz]
+    // Vertices are duplicated so each face has its own set with correct normals
+    constexpr std::array<float, 3 * 24 * 2> UnitCube3D24WNormals = {
+        // Front face (normal: 0, 0, 1) - indices 0-3
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  // 0: Bottom left front
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  // 1: Bottom right front
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  // 2: Top right front
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  // 3: Top left front
+
+        // Back face (normal: 0, 0, -1) - indices 4-7
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  // 4: Bottom right back
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  // 5: Bottom left back
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  // 6: Top left back
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  // 7: Top right back
+
+        // Right face (normal: 1, 0, 0) - indices 8-11
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  // 8: Bottom front right
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  // 9: Bottom back right
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  // 10: Top back right
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  // 11: Top front right
+
+        // Left face (normal: -1, 0, 0) - indices 12-15
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  // 12: Bottom back left
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  // 13: Bottom front left
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  // 14: Top front left
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  // 15: Top back left
+
+        // Top face (normal: 0, 1, 0) - indices 16-19
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  // 16: Front left top
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  // 17: Front right top
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  // 18: Back right top
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  // 19: Back left top
+
+        // Bottom face (normal: 0, -1, 0) - indices 20-23
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  // 20: Back left bottom
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  // 21: Back right bottom
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  // 22: Front right bottom
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f   // 23: Front left bottom
+    };
+
+    // Unit cube topology for 24-vertex cube with normals - 6 faces × 2 triangles × 3 indices = 36 indices
+    constexpr std::array<unsigned int, 6 * 3 * 2> UnitCube3D24WNormalsTopologyTriangles = {
+        // Front face (indices 0-3)
+        0, 1, 2,    2, 3, 0,
+        // Back face (indices 4-7)
+        4, 5, 6,    6, 7, 4,
+        // Right face (indices 8-11)
+        8, 9, 10,   10, 11, 8,
+        // Left face (indices 12-15)
+        12, 13, 14, 14, 15, 12,
+        // Top face (indices 16-19)
+        16, 17, 18, 18, 19, 16,
+        // Bottom face (indices 20-23)
+        20, 21, 22, 22, 23, 20
+    };
+
     // Unit cube topology - 6 faces x 2 triangles x 3 indices = 36 indices
     constexpr std::array<unsigned int, 36> UnitCubeTopologyTriangles = {
 
