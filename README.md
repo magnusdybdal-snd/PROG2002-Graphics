@@ -9,8 +9,8 @@ An interactive 3D chessboard rendered with a custom OpenGL framework built from 
 - Marius Eilertsen
 ## Instructions
 ```bash
-git clone --recursive git@git.gvk.idi.ntnu.no:course/prog2002/autumn_2025/workspace/Group_03.git
-cd Group_03
+git clone --recursive git@github.com:magnusdybdal-snd/PROG2002-Graphics.git
+cd PROG2002-Graphics
 mkdir build; cd build
 cmake ../; make assignment; ./bin/assignment
 ```
