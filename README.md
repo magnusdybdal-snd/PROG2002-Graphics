@@ -1,13 +1,8 @@
-# PROG20002 Graphics Programming
+# PROG2002 Graphics Programming
 
-### Evaluation
+## Overview
 
-This is a PASS. I have a couple of comments:
-
-  - There are more efficient ways to draw the board (1 board tile + synthetic texturing, instead of 64 individual tiles)
-  - There are more efficient ways to render the pieces. Try to think about how to reduce the number of draw calls for the pieces
-  - I see you have enabled address sanitation in the top-level CMakeLists.txt. Please create a CMake option to enable/disable sanitation and set it to 'OFF' by default. This caused problems with renderdoc and wasn't trivial to find why.
-  - I have deleted some leftover Makefile files in the source tree.
+An interactive 3D chessboard rendered with a custom OpenGL framework built from scratch (buffers, shaders, textures, camera system). Features a textured board and pieces, tile selection and movement, blending, and free camera controls.
 
 ### Group_03 members
 - Magnus Dybdal
